@@ -51,7 +51,7 @@
         android:id="@+id/txtHeading"
         android:layout_width="312dp"
         android:layout_height="90dp"
-        android:text="Welcome Back to PAN!K"
+        android:text="Welcome Back to PAN!K "
         android:textAlignment="center"
         android:textColor="#FFFFFF"
         android:textSize="34sp"
