@@ -8,31 +8,24 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 
-class LoginPage : AppCompatActivity() {
+class RegisterPage : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_login_page)
+        setContentView(R.layout.activity_register_page)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
-        // Find Register and Login button
-        val openLoginButton = findViewById<Button>(R.id.btnLogin)
-        val openRegisterButton = findViewById<Button>(R.id.btnSignUp)
+        // Find Register button
+        val backToLoginButton = findViewById<Button>(R.id.btnRegister)
 
-        // Set onClickListener for Login button
-        openLoginButton.setOnClickListener {
-            // Create an Intent to open the new activity
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-        }
         // Set onClickListener for Register button
-        openRegisterButton.setOnClickListener {
+        backToLoginButton.setOnClickListener {
             // Create an Intent to open the new activity
-            val intent = Intent(this, RegisterPage::class.java)
+            val intent = Intent(this, LoginPage::class.java)
             startActivity(intent)
         }
     }
