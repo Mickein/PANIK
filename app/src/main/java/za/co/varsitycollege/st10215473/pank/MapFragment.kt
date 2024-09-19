@@ -92,7 +92,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun checkLocation() {
-        val locationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        val locationManager =  requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
         if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             getCurrentLocation()
         } else {
