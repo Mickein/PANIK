@@ -16,6 +16,12 @@
         app:cnb_iconColor="@color/red" />
 
     <item
+        android:id="@+id/report"
+        android:icon="@drawable/megaphone"
+        android:title="Report"
+        app:cnb_iconColor="@color/red" />
+
+    <item
         android:id="@+id/profile"
         android:icon="@drawable/profile"
         android:title="Profile"
