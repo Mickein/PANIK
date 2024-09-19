@@ -76,4 +76,5 @@ dependencies {
     implementation(libs.chip)
     implementation(libs.googlePlayServices)
     implementation(libs.googlePlayServicesLocation)
+    implementation(libs.googleAuth)
 }
