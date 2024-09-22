@@ -38,13 +38,19 @@ class ReportFragment : Fragment() {
         wildfireButton = view.findViewById(R.id.btnWildfire)
 
         wildfireButton.setOnClickListener {
-            val dialogBuilder = AlertDialog.Builder(requireContext())
-            dialogBuilder.setView(reportForm)
-            val dialog = dialogBuilder.create()
-            dialog.show()
+            showDialog(wildfireButton, reportForm)
         }
 
         return view
+    }
+
+    fun showDialog(button: Button, reportForm: View){
+        val formTitle = button.text.toString()
+        title.text = formTitle
+        val dialogBuilder = AlertDialog.Builder(requireContext())
+        dialogBuilder.setView(reportForm)
+        val dialog = dialogBuilder.create()
+        dialog.show()
     }
 
 }
