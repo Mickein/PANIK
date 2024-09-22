@@ -41,6 +41,7 @@ class ReportFragment : Fragment() {
             showDialog(wildfireButton, reportForm)
         }
 
+
         return view
     }
 
