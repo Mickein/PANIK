@@ -31,6 +31,11 @@ googlePlayServices="com.google.android.gms:play-services-maps:19.0.0"
 googlePlayServicesLocation="com.google.android.gms:play-services-location:21.3.0"
 secrets-gradle-plugin = { module = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin", version.ref = "secretsGradlePlugin" }
 googleAuth = "com.google.android.gms:play-services-auth:21.2.0"
+cardView = "androidx.cardview:cardview:1.0.0"
+
+
+
+
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
