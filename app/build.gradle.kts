@@ -77,4 +77,7 @@ dependencies {
     implementation(libs.googlePlayServices)
     implementation(libs.googlePlayServicesLocation)
     implementation(libs.googleAuth)
+    implementation(libs.cardView)
+
+
 }
