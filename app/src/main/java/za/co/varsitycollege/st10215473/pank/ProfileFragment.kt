@@ -34,15 +34,7 @@ class ProfileFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_profile, container, false)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        (activity as MainActivity).setDrawerEnabled(true)
-    }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        (activity as MainActivity).setDrawerEnabled(false)
-    }
 
     companion object {
         /**
