@@ -5,7 +5,8 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_gravity="top">
+    android:layout_gravity="top"
+    android:background="@android:color/transparent">
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
@@ -22,8 +23,8 @@
 
             <TextView
                 android:id="@+id/txtReportTitle"
-                android:layout_width="194dp"
-                android:layout_height="23dp"
+                android:layout_width="305dp"
+                android:layout_height="29dp"
                 android:gravity="center"
                 android:text="TextView"
                 android:textSize="20sp"
@@ -40,8 +41,8 @@
                 android:backgroundTint="#999696"
                 android:ems="10"
                 android:gravity="start|top|left"
+                android:hint="Enter Description"
                 android:inputType="textMultiLine"
-                android:text="hello"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.507"
@@ -55,8 +56,8 @@
                 android:layout_height="68dp"
                 android:ems="10"
                 android:gravity="top|left"
+                android:hint="Enter the location"
                 android:inputType="textPostalAddress"
-                android:text="hello"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.207"
@@ -92,13 +93,12 @@
                 android:id="@+id/imgReportPicture"
                 android:layout_width="238dp"
                 android:layout_height="111dp"
-                android:visibility="invisible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.802"
-                tools:srcCompat="@tools:sample/backgrounds/scenic" />
+                tools:srcCompat="@drawable/logo" />
 
             <Button
                 android:id="@+id/btnReport"
