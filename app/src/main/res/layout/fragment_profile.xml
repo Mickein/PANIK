@@ -89,7 +89,6 @@
                     android:id="@+id/imgLanguage"
                     android:layout_width="38dp"
                     android:layout_height="36dp"
-                    android:src="@drawable/baseline_language_24"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.142"
