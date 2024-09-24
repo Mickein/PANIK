@@ -9,13 +9,12 @@
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="365dp"
-        android:layout_height="254dp"
-        android:layout_marginBottom="544dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_width="569dp"
+        android:layout_height="203dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.4"
+        app:layout_constraintHorizontal_bias="0.391"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/semi_circle_login" />
 
     <ImageView
@@ -45,146 +44,31 @@
         android:id="@+id/txtLogo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="628dp"
+        android:layout_marginStart="132dp"
+        android:layout_marginTop="128dp"
         android:fontFamily="@font/bellefair"
         android:text="PAN!K"
         android:textColor="#000000"
         android:textSize="30sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/txtRegister"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="496dp"
+        android:layout_marginStart="104dp"
+        android:layout_marginTop="192dp"
         android:text="Register"
         android:textColor="#000000"
         android:textSize="40sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Create an Account"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.389" />
-
-    <EditText
-        android:id="@+id/edtNameRegister"
-        android:layout_width="290dp"
-        android:layout_height="43dp"
-        android:layout_marginBottom="416dp"
-        android:background="@drawable/textbox_bg_login"
-        android:drawableRight="@drawable/person"
-        android:ems="10"
-        android:inputType="text"
-        android:paddingRight="15dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <TextView
-        android:id="@+id/txtRegisterSurname"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Surame:"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.158"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/txtRegisterName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Name:"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.155"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.412" />
-
     <EditText
-        android:id="@+id/edtSurnameRegister"
-        android:layout_width="290dp"
-        android:layout_height="43dp"
-        android:layout_marginBottom="344dp"
-        android:background="@drawable/textbox_bg_login"
-        android:drawableRight="@drawable/person"
-        android:ems="10"
-        android:inputType="text"
-        android:paddingRight="15dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <TextView
-        android:id="@+id/txtRegisterNumber"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Phone Number:"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.159"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.595" />
-
-    <EditText
-        android:id="@+id/edtNumberRegister"
-        android:layout_width="290dp"
-        android:layout_height="43dp"
-        android:layout_marginBottom="272dp"
-        android:background="@drawable/textbox_bg_login"
-        android:drawableRight="@drawable/baseline_phone_enabled_24"
-        android:ems="10"
-        android:inputType="phone"
-        android:paddingRight="15dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <EditText
-        android:id="@+id/edtEmailRegister"
-        android:layout_width="290dp"
-        android:layout_height="43dp"
-        android:layout_marginBottom="200dp"
-        android:background="@drawable/textbox_bg_login"
-        android:drawableRight="@drawable/email_icon"
-        android:ems="10"
-        android:inputType="textEmailAddress"
-        android:paddingRight="15dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <TextView
-        android:id="@+id/txtRegisterEmail"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Email Address:"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.159"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.687" />
-
-    <EditText
-        android:id="@+id/edtPasswordRegister"
+        android:id="@+id/edtPasswordConfirmPasswordRegister"
         android:layout_width="290dp"
         android:layout_height="43dp"
         android:layout_marginBottom="132dp"
@@ -201,19 +85,129 @@
         android:id="@+id/txtRegisterPassword"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="44dp"
+        android:layout_marginTop="532dp"
         android:text="Password:"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.152"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.775" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/edtPasswordConfirmPasswordRegister"
+        android:id="@+id/edtNumberRegister"
         android:layout_width="290dp"
         android:layout_height="43dp"
-        android:layout_marginBottom="60dp"
+        android:layout_marginBottom="344dp"
+        android:background="@drawable/textbox_bg_login"
+        android:drawableRight="@drawable/baseline_phone_enabled_24"
+        android:ems="10"
+        android:inputType="phone"
+        android:paddingRight="15dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/txtRegisterName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="44dp"
+        android:layout_marginTop="248dp"
+        android:text="Name:"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/btnRegister"
+        android:layout_width="204dp"
+        android:layout_height="45dp"
+        android:layout_marginStart="78dp"
+        android:layout_marginEnd="78dp"
+        android:layout_marginBottom="76dp"
+        android:background="@drawable/custom_button_login"
+        android:text="Register"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/edtSurnameRegister"
+        android:layout_width="290dp"
+        android:layout_height="43dp"
+        android:layout_marginBottom="416dp"
+        android:background="@drawable/textbox_bg_login"
+        android:drawableRight="@drawable/person"
+        android:ems="10"
+        android:inputType="text"
+        android:paddingRight="15dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/txtRegisterSurname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="44dp"
+        android:layout_marginTop="320dp"
+        android:text="Surame:"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/edtEmailRegister"
+        android:layout_width="290dp"
+        android:layout_height="43dp"
+        android:layout_marginBottom="272dp"
+        android:background="@drawable/textbox_bg_login"
+        android:drawableRight="@drawable/email_icon"
+        android:ems="10"
+        android:inputType="textEmailAddress"
+        android:paddingRight="15dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/edtNameRegister"
+        android:layout_width="290dp"
+        android:layout_height="43dp"
+        android:layout_marginBottom="488dp"
+        android:background="@drawable/textbox_bg_login"
+        android:drawableRight="@drawable/person"
+        android:ems="10"
+        android:inputType="text"
+        android:paddingRight="15dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/txtRegisterNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="392dp"
+        android:text="Phone Number:"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/txtRegisterEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="460dp"
+        android:text="Email Address:"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/edtPasswordRegister"
+        android:layout_width="290dp"
+        android:layout_height="43dp"
+        android:layout_marginBottom="204dp"
         android:background="@drawable/textbox_bg_login"
         android:drawableRight="@drawable/password_icon"
         android:ems="10"
@@ -227,25 +221,10 @@
         android:id="@+id/txtRegisterConfirmPassword"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="44dp"
+        android:layout_marginTop="600dp"
         android:text="Confirm Password:"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.203"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.864" />
-
-    <Button
-        android:id="@+id/btnRegister"
-        android:layout_width="204dp"
-        android:layout_height="45dp"
-        android:layout_marginBottom="4dp"
-        android:background="@drawable/custom_button_login"
-        android:text="Register"
-        android:textColor="#FFFFFF"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
