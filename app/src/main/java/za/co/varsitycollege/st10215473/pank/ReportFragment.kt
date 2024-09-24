@@ -27,6 +27,7 @@ import android.content.DialogInterface
 import android.location.Geocoder
 import android.location.Location
 import android.net.Uri
+import androidx.cardview.widget.CardView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
 import com.google.android.gms.maps.model.LatLng
@@ -111,6 +112,7 @@ class ReportFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_report, container, false)
         val reportForm = layoutInflater.inflate(R.layout.activity_report, null)
@@ -236,7 +238,7 @@ class ReportFragment : Fragment() {
         val imageFile = File(requireActivity().application.filesDir,"camera_photo.jpg")
         return FileProvider.getUriForFile(
             requireContext(),
-            "za.co.varsitycollege.st10215473.rvmtimesolutions.fileprovider",
+            "${BuildConfig.APPLICATION_ID}.fileprovider",
             imageFile
         )
     }
