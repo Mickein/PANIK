@@ -1,4 +1,4 @@
-package za.co.varsitycollege.st10215473.pank.Data
+package za.co.varsitycollege.st10215473.pank.data
 
 class Profile (
     val id: String? = null,

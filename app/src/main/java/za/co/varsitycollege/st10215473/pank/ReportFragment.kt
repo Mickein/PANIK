@@ -33,6 +33,7 @@ import androidx.core.content.FileProvider
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.GeoPoint
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import java.io.File
@@ -68,6 +69,7 @@ class ReportFragment : Fragment() {
     private var currentLat: Double? = null
     private var currentLng: Double? = null
     private lateinit var pickImage: ActivityResultLauncher<String>
+    private var uploadedImage: Boolean = false;
 
     companion object {
         const val LOCATION_REQUEST_CODE = 1000
@@ -93,11 +95,12 @@ class ReportFragment : Fragment() {
         }
 
         // Register activity result for taking a picture
-        takePictureLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { isSuccess ->
-            if (isSuccess) {
-                uri?.let { image.setImageURI(it) }
+        takePictureLauncher =
+            registerForActivityResult(ActivityResultContracts.TakePicture()) { isSuccess ->
+                if (isSuccess) {
+                    uri?.let { image.setImageURI(it) }
+                }
             }
-        }
 
         pickImage = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
             image.setImageURI(uri)
@@ -175,16 +178,19 @@ class ReportFragment : Fragment() {
         }
 
         pictureCheckBox.setOnCheckedChangeListener { buttonView, isChecked ->
-            if(isChecked){
+            if (isChecked) {
+                uploadedImage = true
                 image.visibility = View.VISIBLE
 
-            }else{
-                Toast.makeText(context, "Location checkbox unchecked", Toast.LENGTH_SHORT).show()
+            } else {
+                uploadedImage = false
+                image.setImageResource(R.drawable.image_upload)
+                Toast.makeText(context, "Picture checkbox unchecked", Toast.LENGTH_SHORT).show()
                 image.visibility = View.INVISIBLE
             }
         }
 
-        image.setOnClickListener{
+        image.setOnClickListener {
             val options = arrayOf("Take Photo", "Choose from Gallery")
             val builder = AlertDialog.Builder(requireContext())
             builder.setTitle("Select Option")
@@ -193,6 +199,7 @@ class ReportFragment : Fragment() {
                     0 -> {
                         checkCameraPermissionAndOpen()//Some code by CodingZest on Youtube: https://www.youtube.com/watch?v=9XSlbZN1yFg&t=761s
                     }
+
                     1 -> pickImage.launch("image/*")
                 }
                 dialogInterface.dismiss()
@@ -208,11 +215,18 @@ class ReportFragment : Fragment() {
         return view
     }
 
-    private fun checkCameraPermissionAndOpen(){
-        if(ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
-            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.CAMERA), CAMERA_PERMISSION_REQUEST_CODE)
-        }
-        else{
+    private fun checkCameraPermissionAndOpen() {
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.CAMERA
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf(Manifest.permission.CAMERA),
+                CAMERA_PERMISSION_REQUEST_CODE
+            )
+        } else {
             takePictureLauncher.launch(uri)
         }
     }
@@ -224,18 +238,17 @@ class ReportFragment : Fragment() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if(requestCode == CAMERA_PERMISSION_REQUEST_CODE){
-            if(grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+        if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
+            if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 takePictureLauncher.launch(uri)
-            }
-            else{
+            } else {
                 Toast.makeText(context, "Camera Permission Denied", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    private fun createUri(): Uri{
-        val imageFile = File(requireActivity().application.filesDir,"camera_photo.jpg")
+    private fun createUri(): Uri {
+        val imageFile = File(requireActivity().application.filesDir, "camera_photo.jpg")
         return FileProvider.getUriForFile(
             requireContext(),
             "${BuildConfig.APPLICATION_ID}.fileprovider",
@@ -243,18 +256,27 @@ class ReportFragment : Fragment() {
         )
     }
 
-    fun showDialog(button: Button, reportForm: View){
+    fun showDialog(button: Button, reportForm: View) {
         val formTitle = button.text.toString()
         title.text = formTitle
+
+        // Check if the reportForm already has a parent and remove it
+        val parent = reportForm.parent as? ViewGroup
+        parent?.removeView(reportForm)
+
         val dialogBuilder = AlertDialog.Builder(requireContext())
         dialogBuilder.setView(reportForm)
         val dialog = dialogBuilder.create()
         dialog.show()
     }
 
+
     private fun checkLocationPermissionsAndDisplay() {
         // Check if fine location permission is granted
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
         ) {
             checkLocation()  // Permission already granted, proceed to check location
         } else {
@@ -264,7 +286,8 @@ class ReportFragment : Fragment() {
     }
 
     private fun checkLocation() {
-        val locationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        val locationManager =
+            requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
         if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             getCurrentLocation()
         } else {
@@ -273,7 +296,11 @@ class ReportFragment : Fragment() {
     }
 
     private fun getCurrentLocation() {
-        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
             // Permission is granted, proceed with getting the location
             fusedLocationClient.lastLocation.addOnSuccessListener { location ->
                 location?.let {
@@ -319,7 +346,11 @@ class ReportFragment : Fragment() {
         }
     }
 
-    private fun convertAddressToCoordinatesAndSave(title: String, description: String, address: String) {
+    private fun convertAddressToCoordinatesAndSave(
+        title: String,
+        description: String,
+        address: String
+    ) {
         val geocoder = Geocoder(requireContext(), Locale.getDefault())
         val addressList = geocoder.getFromLocationName(address, 1)
         if (addressList != null && addressList.isNotEmpty()) {
@@ -336,43 +367,62 @@ class ReportFragment : Fragment() {
         val user = FirebaseAuth.getInstance().currentUser
 
         if (user != null) {
+            // Prepare report data
             val reportData = hashMapOf<String, Any>(
+                "title" to title,  // Store the report title
                 "description" to description,
-                "location" to hashMapOf(
-                    "latitude" to currentLat,
-                    "longitude" to currentLng
-                ),
-                "userId" to user.uid,  // Example: if you're storing user info
-                "timestamp" to System.currentTimeMillis()
+                "location" to GeoPoint(lat, lng),  // Store location as a GeoPoint
+                "userId" to user.uid,
+                "timestamp" to System.currentTimeMillis(),
+                "imageUrl" to ""  // Initialize image URL as null
             )
 
-            if (uri != null) {
+            if (uploadedImage == true) {
+                // If the user added an image, upload it and store its URL
                 uploadImageAndStoreData(uri!!, reportData)
             } else {
+                // If no image, directly store the report data with imageUrl set to null
                 firebaseRef.collection("reports").add(reportData)
                     .addOnSuccessListener {
-                        Toast.makeText(context, "Report successfully submitted", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Report successfully submitted", Toast.LENGTH_SHORT)
+                            .show()
                     }
                     .addOnFailureListener { e ->
-                        Toast.makeText(context, "Failed to submit report: ${e.message}", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            "Failed to submit report: ${e.message}",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
             }
         }
     }
 
+
     private fun uploadImageAndStoreData(imageUri: Uri, reportData: HashMap<String, Any>) {
         val imageRef = storageRef.child("images/${UUID.randomUUID()}.jpg")
 
         imageRef.putFile(imageUri).addOnSuccessListener {
+            // Once image is uploaded, get the download URL
             imageRef.downloadUrl.addOnSuccessListener { uri ->
+                // Update the report data with the image URL
                 reportData["imageUrl"] = uri.toString()
 
+                // Store report data with the image URL
                 firebaseRef.collection("reports").add(reportData)
                     .addOnSuccessListener {
-                        Toast.makeText(context, "Report successfully submitted with image", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            "Report successfully submitted with image",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                     .addOnFailureListener { e ->
-                        Toast.makeText(context, "Failed to submit report: ${e.message}", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            "Failed to submit report: ${e.message}",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
             }
         }.addOnFailureListener {
@@ -380,4 +430,5 @@ class ReportFragment : Fragment() {
         }
     }
 }
+
 

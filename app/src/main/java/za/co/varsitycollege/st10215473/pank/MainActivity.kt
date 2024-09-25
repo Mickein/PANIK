@@ -1,5 +1,6 @@
 package za.co.varsitycollege.st10215473.pank
 
+import MapFragment
 import android.graphics.Rect
 import android.os.Bundle
 import android.view.View

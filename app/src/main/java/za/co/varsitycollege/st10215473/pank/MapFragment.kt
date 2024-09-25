@@ -1,12 +1,12 @@
-package za.co.varsitycollege.st10215473.pank
-
 import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -22,8 +22,11 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.firebase.firestore.FirebaseFirestore
+import za.co.varsitycollege.st10215473.pank.R
 
 class MapFragment : Fragment(), OnMapReadyCallback {
 
@@ -34,21 +37,20 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     companion object {
         const val LOCATION_REQUEST_CODE = 1000
+        const val MAX_DISTANCE_KM = 50 // 50 km radius
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_map, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        map= view.findViewById(R.id.mapView)
-
+        map = view.findViewById(R.id.mapView)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
         map.onCreate(savedInstanceState)
@@ -71,10 +73,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     override fun onMapReady(p0: GoogleMap) {
         mMap = p0
-
         val sydney = LatLng(-34.0, 151.0)
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 10f))
-
         checkLocationPermissionsAndDisplay()
     }
 
@@ -84,7 +84,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         ) {
             checkLocation()
         } else {
-            // Request permissions using the ActivityResultLauncher
             locationPermissionLauncher.launch(
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
             )
@@ -92,7 +91,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun checkLocation() {
-        val locationManager =  requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        val locationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
         if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             getCurrentLocation()
         } else {
@@ -107,11 +106,26 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         fusedLocationClient.lastLocation.addOnSuccessListener { location ->
             location?.let {
-                val latLng = LatLng(it.latitude, it.longitude)
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10f))
-                mMap.addMarker(MarkerOptions().position(latLng).title("Current Location"))
+                val currentLatLng = LatLng(it.latitude, it.longitude)
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 10f))
+
+                // Current location marker
+                mMap.addMarker(
+                    MarkerOptions()
+                        .position(currentLatLng)
+                        .title("Current Location")
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+                )
+
+                // Fetch and display reports within 50 km
+                displayNearbyReports(it)
             }
         }
+    }
+
+
+    private fun displayNearbyReports(currentLocation: Location) {
+        getReports(currentLocation) // Fetch reports and display them
     }
 
     private fun showDialogBox() {
@@ -146,4 +160,82 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         super.onSaveInstanceState(outState)
         map.onSaveInstanceState(outState)
     }
+
+    private fun getReports(currentLocation: Location) {
+        val db = FirebaseFirestore.getInstance()
+
+        db.collection("reports").get()
+            .addOnSuccessListener { documents ->
+                for (document in documents) {
+                    val description = document.getString("description") ?: "No Description"
+                    val title = document.getString("title")
+                    val geoPoint = document.getGeoPoint("location")
+
+                    // Check if the geoPoint is not null
+                    if (geoPoint != null) {
+                        val latitude = geoPoint.latitude
+                        val longitude = geoPoint.longitude
+
+                        val reportLocation = Location("").apply {
+                            this.latitude = latitude
+                            this.longitude = longitude
+                        }
+
+                        // Calculate distance from current location
+                        val distanceInMeters = currentLocation.distanceTo(reportLocation)
+                        val distanceInKm = distanceInMeters / 1000
+
+                        // If the report is within 50 km, add it to the map
+                        if (distanceInKm <= MAX_DISTANCE_KM) {
+                            val reportLatLng = LatLng(latitude, longitude)
+
+                            // Default marker color
+                            var markerColor = BitmapDescriptorFactory.HUE_RED
+
+                            // Apply yellow color only if title is "Report a Wildfire"
+                            if (title == "Report a Wildfire") {
+                                markerColor = BitmapDescriptorFactory.HUE_YELLOW
+                            }
+                            else if(title == "Report Suspicious Activity"){
+                                markerColor = BitmapDescriptorFactory.HUE_CYAN
+                            }
+                            else if(title == "Report Lost Pet"){
+                                markerColor = BitmapDescriptorFactory.HUE_MAGENTA
+                            }
+                            else if(title == "Report A Crime"){
+                                markerColor = BitmapDescriptorFactory.HUE_ORANGE
+                            }
+                            else if(title == "Report Missing Person"){
+                                markerColor = BitmapDescriptorFactory.HUE_VIOLET
+                            }
+                            else if(title == "Report Vandalism"){
+                                markerColor = BitmapDescriptorFactory.HUE_BLUE
+                            }
+                            else if(title == "Report Excessive Noise"){
+                                markerColor = BitmapDescriptorFactory.HUE_AZURE
+                            }
+                            else if(title == "Other"){
+                                markerColor = BitmapDescriptorFactory.HUE_ROSE
+                            }
+
+                            mMap.addMarker(
+                                MarkerOptions()
+                                    .position(reportLatLng)
+                                    .title(description)
+                                    .icon(BitmapDescriptorFactory.defaultMarker(markerColor))
+                            )
+                        }
+                    } else {
+                        // Log or handle the case where location is missing or not a GeoPoint
+                        Log.e("MapFragment", "Document ${document.id} does not have a valid GeoPoint for 'location'")
+                    }
+                }
+            }
+            .addOnFailureListener { exception ->
+                Toast.makeText(context, "Error fetching reports: ${exception.message}", Toast.LENGTH_LONG).show()
+            }
+    }
+
+
+
 }

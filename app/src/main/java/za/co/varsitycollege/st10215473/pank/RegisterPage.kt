@@ -3,21 +3,16 @@ package za.co.varsitycollege.st10215473.pank
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.auth
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
-import za.co.varsitycollege.st10215473.pank.Data.Profile
+import com.google.firebase.firestore.FirebaseFirestore
+import za.co.varsitycollege.st10215473.pank.data.Profile
 
 class RegisterPage : AppCompatActivity() {
     //variable for going back to Login page if user has an existing account
@@ -30,7 +25,7 @@ class RegisterPage : AppCompatActivity() {
     private lateinit var phoneNumber: EditText
     private lateinit var registerButton: TextView
     private lateinit var authReg: FirebaseAuth
-    private lateinit var firebaseRef: DatabaseReference
+    private lateinit var firebaseRef: FirebaseFirestore
     private lateinit var confirmPassword: EditText
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,7 +41,7 @@ class RegisterPage : AppCompatActivity() {
         passwordEdit = findViewById(R.id.edtPasswordRegister)
         confirmPassword = findViewById(R.id.edtPasswordConfirmPasswordRegister)
         registerButton = findViewById(R.id.btnRegister)
-        firebaseRef = FirebaseDatabase.getInstance().getReference("Profile")
+        firebaseRef = FirebaseFirestore.getInstance()
 
         //Firebase authentication
         authReg = Firebase.auth
@@ -90,32 +85,38 @@ class RegisterPage : AppCompatActivity() {
                 if (task.isSuccessful) {
                     // Sign in success, update UI with the signed-in user's information
                     Toast.makeText(baseContext, "Registration Successful", Toast.LENGTH_LONG).show()
-
                     val user = authReg.currentUser
                     val uid = user?.uid
-                    if(user != null){
-
+                    if (user != null) {
                         val userProfile = Profile(uid, name, surname, number, email, "", "", "")
-                        addUserToFirebase(userProfile, user)
+                        addUserToFirebase(userProfile)
                     }
                 } else {
                     // If sign in fails, display a message to the user.
-                    Toast.makeText(baseContext, "Authentication failed.", Toast.LENGTH_SHORT,).show()
+                    Toast.makeText(baseContext, "Authentication failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
                 }
             }
     }
 
-    private fun addUserToFirebase(userProfile: Profile, user: FirebaseUser) {
-        val uid = user.uid
 
-        firebaseRef.child(uid).setValue(userProfile)
-            .addOnSuccessListener {
-                val intent = Intent(this@RegisterPage, LoginPage::class.java)
-                startActivity(intent)
-                finish()
-            }
-            .addOnFailureListener{
-                Toast.makeText(baseContext, "Failed to add profile to database", Toast.LENGTH_SHORT).show()
-            }
+    private fun addUserToFirebase(userProfile: Profile) {
+        val uid = userProfile.id  // Assuming `uid` is used as the document ID
+        uid?.let {
+            firebaseRef.collection("Profile")
+                .document(it) // Use uid as the document ID
+                .set(userProfile)
+                .addOnSuccessListener {
+                    // On success, navigate to Login page
+                    val intent = Intent(this@RegisterPage, LoginPage::class.java)
+                    startActivity(intent)
+                    finish()
+                }
+                .addOnFailureListener {
+                    Toast.makeText(baseContext, "${it.message}", Toast.LENGTH_SHORT).show()
+                }
+        } ?: run {
+            Toast.makeText(baseContext, "User ID is null. Cannot add profile to database.", Toast.LENGTH_SHORT).show()
+        }
     }
+
 }
