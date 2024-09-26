@@ -1,5 +1,6 @@
 package za.co.varsitycollege.st10215473.pank
 
+import MapFragment
 import android.graphics.Rect
 import android.os.Bundle
 import android.view.View
@@ -51,6 +52,9 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.feed -> {
                     replaceFragment(FeedFragment())
+                }
+                R.id.report -> {
+                    replaceFragment(ReportFragment())
                 }
                 R.id.profile -> replaceFragment(ProfileFragment())
                 else -> false
