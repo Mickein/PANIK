@@ -2,6 +2,8 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
@@ -189,40 +191,39 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                         if (distanceInKm <= MAX_DISTANCE_KM) {
                             val reportLatLng = LatLng(latitude, longitude)
 
-                            // Default marker color
-                            var markerColor = BitmapDescriptorFactory.HUE_RED
-
-                            // Apply yellow color only if title is "Report a Wildfire"
-                            if (title == "Report a Wildfire") {
-                                markerColor = BitmapDescriptorFactory.HUE_YELLOW
-                            }
-                            else if(title == "Report Suspicious Activity"){
-                                markerColor = BitmapDescriptorFactory.HUE_CYAN
-                            }
-                            else if(title == "Report Lost Pet"){
-                                markerColor = BitmapDescriptorFactory.HUE_MAGENTA
-                            }
-                            else if(title == "Report A Crime"){
-                                markerColor = BitmapDescriptorFactory.HUE_ORANGE
-                            }
-                            else if(title == "Report Missing Person"){
-                                markerColor = BitmapDescriptorFactory.HUE_VIOLET
-                            }
-                            else if(title == "Report Vandalism"){
-                                markerColor = BitmapDescriptorFactory.HUE_BLUE
-                            }
-                            else if(title == "Report Excessive Noise"){
-                                markerColor = BitmapDescriptorFactory.HUE_AZURE
-                            }
-                            else if(title == "Other"){
-                                markerColor = BitmapDescriptorFactory.HUE_ROSE
+                            val icon = when (title) {
+                                "Report a Wildfire" -> BitmapDescriptorFactory.fromBitmap(
+                                    getBitmapFromDrawable(R.drawable.fire_emoji, 90, 90)
+                                )
+                                "Report Suspicious Activity" -> BitmapDescriptorFactory.fromBitmap(
+                                    getBitmapFromDrawable(R.drawable.suspicious, 90, 90)
+                                )
+                                "Report Lost Pet" -> BitmapDescriptorFactory.fromBitmap(
+                                    getBitmapFromDrawable(R.drawable.pawprint, 90, 90)
+                                )
+                                "Report A Crime" -> BitmapDescriptorFactory.fromBitmap(
+                                    getBitmapFromDrawable(R.drawable.crime, 90, 90)
+                                )
+                                "Report Missing Person" -> BitmapDescriptorFactory.fromBitmap(
+                                    getBitmapFromDrawable(R.drawable.missing, 90, 90)
+                                )
+                                "Report Vandalism" -> BitmapDescriptorFactory.fromBitmap(
+                                    getBitmapFromDrawable(R.drawable.vandalism, 90, 90)
+                                )
+                                "Report Excessive Noise" -> BitmapDescriptorFactory.fromBitmap(
+                                    getBitmapFromDrawable(R.drawable.noisy, 90, 90)
+                                )
+                                "Other" -> BitmapDescriptorFactory.fromBitmap(
+                                    getBitmapFromDrawable(R.drawable.menu, 90, 90)
+                                )
+                                else -> BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)
                             }
 
                             mMap.addMarker(
                                 MarkerOptions()
                                     .position(reportLatLng)
                                     .title(description)
-                                    .icon(BitmapDescriptorFactory.defaultMarker(markerColor))
+                                    .icon(icon)
                             )
                         }
                     } else {
@@ -235,6 +236,23 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 Toast.makeText(context, "Error fetching reports: ${exception.message}", Toast.LENGTH_LONG).show()
             }
     }
+
+    private fun getBitmapFromDrawable(resId: Int, width: Int, height: Int): Bitmap {
+        val drawable = ContextCompat.getDrawable(requireContext(), resId)!!
+        val bitmap = Bitmap.createBitmap(
+            drawable.intrinsicWidth,
+            drawable.intrinsicHeight,
+            Bitmap.Config.ARGB_8888
+        )
+        val canvas = Canvas(bitmap)
+        drawable.setBounds(0, 0, canvas.width, canvas.height)
+        drawable.draw(canvas)
+
+        // Resize the bitmap to match the size of a default marker
+        return Bitmap.createScaledBitmap(bitmap, width, height, false)
+    }
+
+
 
 
 
