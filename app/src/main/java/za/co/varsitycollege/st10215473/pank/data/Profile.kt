@@ -6,10 +6,7 @@ class Profile (
     val surname: String? = null,
     val number: String? = null,
     val email: String? = null,
-    val gender: String? = null,
-    val imageUrl: String? = null,
-    val timesheetId: String? = null,
     val profilePic: String? = null,
     ){
-    constructor():this("", "", "", "", "", "", "", "", "")
+    constructor():this("", "", "", "", "", "")
 }
