@@ -1,10 +1,23 @@
-<TextView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/textView5"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:text="TextView"
-    android:padding="14dp"
-    android:textColor="@color/black"
-    android:textStyle="bold"
-    android:textSize="16sp"/>
+    android:orientation="horizontal"
+    android:padding="8dp">
+
+    <!-- The Icon for each item -->
+    <ImageView
+        android:id="@+id/spinnerIcon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginEnd="8dp"
+        android:contentDescription="@string/icon_desc" />
+
+    <!-- The Text for each item -->
+    <TextView
+        android:id="@+id/spinnerText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/black"
+        android:textSize="16sp" />
+</LinearLayout>

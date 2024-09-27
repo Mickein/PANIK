@@ -14,7 +14,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.ImageView
 import android.widget.Spinner
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -39,8 +41,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var map: MapView
     private lateinit var locationPermissionLauncher: ActivityResultLauncher<Array<String>>
-
-    // Spinner fields
     private lateinit var radiusDropdown: Spinner
     private lateinit var categoryDropdown: Spinner
 
@@ -56,6 +56,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         return inflater.inflate(R.layout.fragment_map, container, false)
     }
 
+    data class CategoryItem(val name: String, val iconResId: Int)
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -64,16 +66,55 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         categoryDropdown = view.findViewById(R.id.spnReport) // For category
 
         // Set up radius dropdown
-        val radiusOptions = arrayOf("10km", "50km", "1000km", "50000km")
+        val radiusOptions = arrayOf("Nearby", "Suburb", "Province", "Country")
         val radiusAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, radiusOptions)
         radiusAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         radiusDropdown.adapter = radiusAdapter
         radiusDropdown.setSelection(0) // Default to 10km
 
-        // Set up category dropdown
-        val categoryOptions = arrayOf("All Reports", "Wildfire", "Suspicious Activity", "Lost Pet", "Crime", "Vandalism", "Excessive Noise", "Missing Person", "Other")
-        val categoryAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, categoryOptions)
-        categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        // Set up category dropdown with icons
+        val categoryOptions = arrayOf(
+            CategoryItem("All Reports", R.drawable.logo),
+            CategoryItem("Wildfire", R.drawable.fire_emoji),
+            CategoryItem("Suspicious Activity", R.drawable.suspicious),
+            CategoryItem("Lost Pet", R.drawable.pawprint),
+            CategoryItem("Crime", R.drawable.crime),
+            CategoryItem("Vandalism", R.drawable.vandalism),
+            CategoryItem("Excessive Noise", R.drawable.noisy),
+            CategoryItem("Missing Person", R.drawable.missing),
+            CategoryItem("Other", R.drawable.menu)
+        )
+
+        // Custom adapter for the spinner
+        val categoryAdapter = object : ArrayAdapter<CategoryItem>(requireContext(), R.layout.dropdown_item, categoryOptions) {
+            override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+                return getCustomView(position, convertView, parent)
+            }
+
+            override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
+                return getCustomView(position, convertView, parent)
+            }
+
+            private fun getCustomView(position: Int, convertView: View?, parent: ViewGroup): View {
+                val inflater = LayoutInflater.from(context)
+                val view = convertView ?: inflater.inflate(R.layout.dropdown_item, parent, false)
+
+                val icon = view.findViewById<ImageView>(R.id.spinnerIcon)
+                val text = view.findViewById<TextView>(R.id.spinnerText)
+
+                val categoryItem = getItem(position)
+
+                // Set the icon and text for each category item
+                categoryItem?.let {
+                    icon.setImageResource(it.iconResId)
+                    text.text = it.name
+                }
+
+                return view
+            }
+        }
+
+        // Set the adapter to the category spinner
         categoryDropdown.adapter = categoryAdapter
         categoryDropdown.setSelection(0) // Default to All Reports
 
@@ -118,17 +159,20 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun refreshMapWithSelectedOptions() {
-        // Get the selected radius and category
-        val selectedRadius = radiusDropdown.selectedItem.toString().removeSuffix("km").toDouble()
-        val selectedCategory = categoryDropdown.selectedItem.toString()
+        val selectedRadius = when (radiusDropdown.selectedItem.toString()) {
+            "Nearby" -> 10.0
+            "Suburb" -> 50.0
+            "Province" -> 1000.0
+            "Country" -> 50000.0
+            else -> 10.0 // Default to 10km if something goes wrong
+        }
+        val selectedCategory = categoryDropdown.selectedItem as CategoryItem
 
-        // Check if location permissions are granted before updating the map
+        // Check permissions and update the map
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             fusedLocationClient.lastLocation.addOnSuccessListener { location ->
                 location?.let {
                     mMap.clear()
-
-                    // Add the current location marker back
                     val currentLatLng = LatLng(it.latitude, it.longitude)
                     mMap.addMarker(
                         MarkerOptions()
@@ -136,8 +180,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                             .title("Current Location")
                             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
                     )
-
-                    // Fetch and display reports based on the selected radius and category
                     getReports(it, selectedRadius, selectedCategory)
                 }
             }
@@ -198,8 +240,14 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun displayNearbyReports(currentLocation: Location) {
-        val selectedRadius = radiusDropdown.selectedItem.toString().removeSuffix("km").toDouble()
-        val selectedCategory = categoryDropdown.selectedItem.toString()
+        val selectedRadius = when (radiusDropdown.selectedItem.toString()) {
+            "Nearby" -> 10.0
+            "Suburb" -> 50.0
+            "Province" -> 1000.0
+            "Country" -> 50000.0
+            else -> 10.0 // Default to 10km
+        }
+        val selectedCategory = categoryDropdown.selectedItem as CategoryItem
 
         getReports(currentLocation, selectedRadius, selectedCategory) // Fetch reports based on filters
     }
@@ -237,7 +285,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         map.onSaveInstanceState(outState)
     }
 
-    private fun getReports(currentLocation: Location, selectedRadius: Double, selectedCategory: String) {
+    private fun getReports(currentLocation: Location, selectedRadius: Double, selectedCategory: CategoryItem) {
         val db = FirebaseFirestore.getInstance()
 
         db.collection("reports").get()
@@ -260,7 +308,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                         val distanceInKm = distanceInMeters / 1000
 
                         // Check if the report is within the selected radius and matches the category
-                        if (distanceInKm <= selectedRadius && (title.contains(selectedCategory) || selectedCategory == "All Reports")) {
+                        if (distanceInKm <= selectedRadius && (title.contains(selectedCategory.name, ignoreCase = true) || selectedCategory.name == "All Reports")) {
                             val reportLatLng = LatLng(latitude, longitude)
 
                             val icon = when (title) {
