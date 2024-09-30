@@ -192,7 +192,7 @@ class LoginPage : AppCompatActivity() {
                 .set(userProfile)
                 .addOnSuccessListener {
                     // On success, user profile is stored
-                    Toast.makeText(this, "Profile added to Firestore", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Profile added to Firestore ", Toast.LENGTH_SHORT).show()
                 }
                 .addOnFailureListener {
                     Toast.makeText(this, "${it.message}", Toast.LENGTH_SHORT).show()
