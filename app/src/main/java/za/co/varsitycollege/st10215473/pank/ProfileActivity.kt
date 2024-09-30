@@ -13,8 +13,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.squareup.picasso.Picasso
 
-// To load the profile picture if using URLs
-
 class ProfileActivity : AppCompatActivity() {
 
     private lateinit var backToProfilePage: TextView

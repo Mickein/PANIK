@@ -100,7 +100,7 @@ class RegisterPage : AppCompatActivity() {
 
 
     private fun addUserToFirebase(userProfile: Profile) {
-        val uid = userProfile.id  // Assuming `uid` is used as the document ID
+        val uid = userProfile.id
         uid?.let {
             firebaseRef.collection("Profile")
                 .document(it) // Use uid as the document ID

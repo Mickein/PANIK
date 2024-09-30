@@ -32,7 +32,6 @@ class ProfileFragment : Fragment() {
         firebaseAuth = FirebaseAuth.getInstance()
         firebaseRef = FirebaseFirestore.getInstance()
 
-        // Find the EditText or TextView fields where the user's info will be displayed
         nameText = view.findViewById(R.id.lblName)
         emailText = view.findViewById(R.id.lblEmail)
         val profilePicView = view.findViewById<ImageView>(R.id.imgProfileImage) // For profile picture
@@ -54,7 +53,7 @@ class ProfileFragment : Fragment() {
                         // Set the data to the UI components
                         nameText.text = name
                         emailText.text = email
-                        // Load the profile picture using Picasso (or other image loading library)
+                        // Load the profile picture using Picasso
                         if (profilePicUrl.isNotEmpty()) {
                             Picasso.get().load(profilePicUrl).into(profilePicView)
                         }
@@ -76,7 +75,6 @@ class ProfileFragment : Fragment() {
         val openLogoutButton = view.findViewById<Button>(R.id.btnlogout)
         val openProfileActivity = view.findViewById<Button>(R.id.btnGoToProfilePage)
 
-        // Set the onClickListener for the Buttons
         openSettingsButton.setOnClickListener {
             // Create an Intent to open the new activity
             val intent = Intent(requireContext(), SettingsPage::class.java)

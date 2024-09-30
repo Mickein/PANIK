@@ -72,15 +72,16 @@
                 android:id="@+id/ckbUploadPicture"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Upload A Picture"
                 android:paddingLeft="5dp"
+                android:text="Upload A Picture"
                 android:textColor="#FFFFFF"
                 app:buttonTint="#3F783B"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.502"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.547" />
+                app:layout_constraintVertical_bias="0.527" />
 
             <CheckBox
                 android:id="@+id/ckbCurrentLocation"
@@ -99,15 +100,15 @@
 
             <ImageView
                 android:id="@+id/imgReportPicture"
-                android:layout_width="208dp"
-                android:layout_height="110dp"
-                android:visibility="visible"
+                android:layout_width="206dp"
+                android:layout_height="136dp"
+                android:background="@drawable/image_upload"
+                android:visibility="invisible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.802"
-                tools:srcCompat="@drawable/image_upload" />
+                app:layout_constraintVertical_bias="0.802" />
 
             <Button
                 android:id="@+id/btnReport"

@@ -18,9 +18,6 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
- // Adjust the package as necessary
-
-
 class ReportHistoryActivity : AppCompatActivity() {
 
     private lateinit var rvReportHistory: RecyclerView
@@ -69,10 +66,10 @@ class ReportHistoryActivity : AppCompatActivity() {
                         reportList.addAll(response.body()!!)  // Add new reports
                         Log.d("ReportHistoryActivity", "Reports fetched: ${reportList.size}")
                     } else {
+                        Toast.makeText(this@ReportHistoryActivity, "Failed to retrieve reports: ${response.message()}", Toast.LENGTH_SHORT).show()
                         Log.e("MainActivity", "Failed to retrieve reports: ${response.message()}")
                     }
-                    val historyAdapter = ReportAdapter(reportList, this@ReportHistoryActivity)
-                    rvReportHistory.adapter = historyAdapter
+                    reportAdapter.notifyDataSetChanged()
                 }
 
                 override fun onFailure(call: Call<List<Reports>>, t: Throwable) {

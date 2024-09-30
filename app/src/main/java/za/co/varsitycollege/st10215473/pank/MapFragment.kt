@@ -46,7 +46,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     companion object {
         const val LOCATION_REQUEST_CODE = 1000
-        const val MAX_DISTANCE_KM = 50 // Default maximum distance
+        const val MAX_DISTANCE_KM = 50
     }
 
     //OpenAI. (2024). Conversation on Displaying Map Locations. Available at https://www.openai.com
@@ -165,7 +165,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             "Suburb" -> 50.0
             "Province" -> 1000.0
             "Country" -> 50000.0
-            else -> 10.0 // Default to 10km if something goes wrong
+            else -> 10.0 // Default to 10km
         }
         val selectedCategory = categoryDropdown.selectedItem as CategoryItem
 

@@ -160,7 +160,7 @@ class LoginPage : AppCompatActivity() {
                     val userProfile = Profile(
                         id = user.uid,
                         name = displayName,
-                        surname = "",  // You can handle surname as needed
+                        surname = "",
                         number = phoneNumber,
                         email = email,
                         profilePic = account.photoUrl.toString()

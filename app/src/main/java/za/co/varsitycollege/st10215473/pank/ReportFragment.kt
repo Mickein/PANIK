@@ -99,12 +99,14 @@ class ReportFragment : Fragment() {
             registerForActivityResult(ActivityResultContracts.TakePicture()) { isSuccess ->
                 if (isSuccess) {
                     uri?.let { image.setImageURI(it) }
+                    image.setBackgroundResource(0)
                 }
             }
 
         pickImage = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
             image.setImageURI(uri)
             this.uri = uri
+            image.setBackgroundResource(0)
         }
 
         uri = createUri()
@@ -178,10 +180,11 @@ class ReportFragment : Fragment() {
             if (isChecked) {
                 uploadedImage = true
                 image.visibility = View.VISIBLE
+                image.setBackgroundResource(R.drawable.image_upload)
 
             } else {
                 uploadedImage = false
-                image.setImageResource(R.drawable.image_upload)
+                image.setImageResource(0)
                 image.visibility = View.INVISIBLE
             }
         }
@@ -364,7 +367,7 @@ class ReportFragment : Fragment() {
         if (user != null) {
             // Prepare report data
             val reportData = hashMapOf<String, Any>(
-                "title" to title,  // Store the report title
+                "title" to title,
                 "description" to description,
                 "location" to GeoPoint(lat, lng),  // Store location as a GeoPoint
                 "userId" to user.uid,
