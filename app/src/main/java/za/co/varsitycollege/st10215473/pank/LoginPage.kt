@@ -46,7 +46,7 @@ class LoginPage : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_login_page)
 
-
+        firebaseRef = FirebaseFirestore.getInstance()
         auth = Firebase.auth
 
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
