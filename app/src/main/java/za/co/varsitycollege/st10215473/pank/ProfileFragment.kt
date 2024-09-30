@@ -12,26 +12,9 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.cardview.widget.CardView
 
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [ProfileFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class ProfileFragment : Fragment() {
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_NAME)
-            param2 = it.getString(ARG_EMAIL)
-        }
-
-    }
 
     private lateinit var nameText: TextView
     private lateinit var emailText: TextView
@@ -47,8 +30,8 @@ class ProfileFragment : Fragment() {
         emailText = view.findViewById(R.id.lblEmail)
 
         // Retrieve the data passed through arguments (using Bundle)
-        val name = arguments?.getString(param1)
-        val email = arguments?.getString(param2)
+        val name = arguments?.getString(ARG_NAME)
+        val email = arguments?.getString(ARG_EMAIL)
 
         // Set the data to the UI components
         nameText.text = name
@@ -93,14 +76,6 @@ class ProfileFragment : Fragment() {
         private const val ARG_NAME = "name"
         private const val ARG_EMAIL = "email"
 
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param name User's name.
-         * @param email User's email.
-         * @return A new instance of fragment ProfileFragment.
-         */
         @JvmStatic
         fun newInstance(name: String, email: String) =
             ProfileFragment().apply {
