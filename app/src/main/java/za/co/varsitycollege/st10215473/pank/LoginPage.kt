@@ -147,7 +147,12 @@ class LoginPage : AppCompatActivity() {
         val credential = GoogleAuthProvider.getCredential(account.idToken, null)
         auth.signInWithCredential(credential).addOnCompleteListener{
             if (it.isSuccessful){
-                val intent = Intent(this, MainActivity::class.java)
+                // Create an intent to pass user data to ProfileActivity
+                val intent = Intent(this, ProfileActivity::class.java).apply {
+                    putExtra("name", account.displayName)
+                    putExtra("email", account.email)
+                    putExtra("profilePic", account.photoUrl.toString())  // profile picture URL if needed
+                }
                 startActivity(intent)
                 Toast.makeText(this, "Successfully Logged in With Google Account" , Toast.LENGTH_SHORT).show()
             }
@@ -156,6 +161,7 @@ class LoginPage : AppCompatActivity() {
             }
         }
     }
+
 
 
 }

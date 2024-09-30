@@ -54,6 +54,7 @@
                 android:id="@+id/edtLocation"
                 android:layout_width="163dp"
                 android:layout_height="66dp"
+                android:backgroundTint="#999696"
                 android:ems="10"
                 android:hint="Enter the location"
                 android:textColorHint="#C8BBBB"
