@@ -80,5 +80,7 @@ dependencies {
     implementation(libs.googleAuth)
     implementation(libs.cardView)
     implementation(libs.picasso)
+    implementation(libs.retrofit)
+    implementation(libs.gson)
 
 }
