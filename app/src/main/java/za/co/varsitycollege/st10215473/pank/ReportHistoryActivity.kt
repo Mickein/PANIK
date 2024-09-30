@@ -3,7 +3,6 @@ package za.co.varsitycollege.st10215473.pank
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -13,6 +12,13 @@ import com.google.firebase.firestore.FirebaseFirestore
 import za.co.varsitycollege.st10215473.pank.adapter.ReportAdapter
 import za.co.varsitycollege.st10215473.pank.data.Reports
 import za.co.varsitycollege.st10215473.pank.decorator.SpacesItemDecoration
+import android.util.Log
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+
+ // Adjust the package as necessary
+
 
 class ReportHistoryActivity : AppCompatActivity() {
 
@@ -42,36 +48,34 @@ class ReportHistoryActivity : AppCompatActivity() {
         reportAdapter = ReportAdapter(reportList, this)
         rvReportHistory.adapter = reportAdapter
 
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
         // Fetch current user's reports from Firestore
-        fetchUserReports()
+        fetchUserReports(userId)
 
+        // Add spacing between items in RecyclerView
         val spacingInPixels = resources.getDimensionPixelSize(R.dimen.spacing_between_items)
         rvReportHistory.addItemDecoration(SpacesItemDecoration(spacingInPixels))
-
-        val linearLayoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        rvReportHistory.layoutManager = linearLayoutManager
     }
 
-    private fun fetchUserReports() {
-        // Get the current user ID
-        val userId = FirebaseAuth.getInstance().currentUser?.uid
-
+    private fun fetchUserReports(userId: String?) {
+        val reportApi = ApiClient.getClient().create(ReportApi::class.java)
         if (userId != null) {
-            // Query Firestore for reports where userId matches the current user
-            firebaseRef.collection("Reports")
-                .whereEqualTo("userId", userId)
-                .get()
-                .addOnSuccessListener { documents ->
-                    for (document in documents) {
-                        val report = document.toObject(Reports::class.java)
-                        reportList.add(report)
+            reportApi.getReports(userId).enqueue(object : Callback<List<Reports>> {
+                override fun onResponse(call: Call<List<Reports>>, response: Response<List<Reports>>) {
+                    if (response.isSuccessful && response.body() != null) {
+                        reportList.clear()  // Clear previous reports
+                        reportList.addAll(response.body()!!)  // Add new reports
+                        reportAdapter.notifyDataSetChanged()  // Notify the adapter
+                        Log.d("MainActivity", "Reports fetched: ${reportList.size}")
+                    } else {
+                        Log.e("MainActivity", "Failed to retrieve reports: ${response.message()}")
                     }
-                    // Notify the adapter that the data has changed
-                    reportAdapter.notifyDataSetChanged()
                 }
-                .addOnFailureListener { e ->
-                    e.printStackTrace()
+
+                override fun onFailure(call: Call<List<Reports>>, t: Throwable) {
+                    Log.e("MainActivity", "Error: ${t.message}")
                 }
+            })
         }
     }
 }
