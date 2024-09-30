@@ -27,8 +27,8 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v2
         with:
-          java-version: '11' 
-
+          java-version: '11'  
+          distribution: 'temurin'  
       # Grants execute permission for gradlew
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
