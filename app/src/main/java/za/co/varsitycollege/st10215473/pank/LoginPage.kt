@@ -3,6 +3,7 @@ package za.co.varsitycollege.st10215473.pank
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -150,54 +151,57 @@ class LoginPage : AppCompatActivity() {
         val credential = GoogleAuthProvider.getCredential(account.idToken, null)
         auth.signInWithCredential(credential).addOnCompleteListener {
             if (it.isSuccessful) {
-                // Retrieve necessary user details from the GoogleSignInAccount object
-                val displayName = account.displayName ?: "Unknown"
-                val email = account.email ?: "No email"
                 val user = auth.currentUser
+                if (user != null) {
+                    val displayName = account.displayName ?: "Unknown"
+                    val email = account.email ?: "No email"
+                    val phoneNumber = user.phoneNumber ?: "No phone number"
 
-                // If phone number is not provided by Google, prompt user for it (Optional step)
-                val phoneNumber = user?.phoneNumber ?: "No phone number"
+                    val userProfile = Profile(
+                        id = user.uid,
+                        name = displayName,
+                        surname = "",  // You can handle surname as needed
+                        number = phoneNumber,
+                        email = email,
+                        profilePic = account.photoUrl.toString()
+                    )
 
-                // Add user to Firestore
-                val userProfile = Profile(
-                    id = user?.uid,
-                    name = displayName,
-                    surname = "",  // Google API may not split name, handle it accordingly
-                    number = phoneNumber,
-                    email = email,
-                    profilePic = account.photoUrl.toString()  // Add profile picture if needed
-                )
-                addUserToFirebase(userProfile)
+                    // Store user profile in Firestore
+                    addUserToFirebase(userProfile)
 
-                // Navigate to Profile Activity
-                val intent = Intent(this, ProfileActivity::class.java).apply {
-                    putExtra("name", displayName)
-                    putExtra("email", email)
-                    putExtra("profilePic", account.photoUrl.toString())
+                    // Redirect to ProfileActivity
+                    val intent = Intent(this, ProfileActivity::class.java).apply {
+                        putExtra("name", displayName)
+                        putExtra("email", email)
+                        putExtra("profilePic", account.photoUrl.toString())
+                    }
+                    startActivity(intent)
+                } else {
+                    Toast.makeText(this, "User data unavailable", Toast.LENGTH_SHORT).show()
                 }
-                startActivity(intent)
-
-                Toast.makeText(this, "Successfully Logged in With Google Account", Toast.LENGTH_SHORT).show()
             } else {
-                Toast.makeText(this, "Can't Login Currently, Try Again", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Google Sign-in Failed", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
+
     private fun addUserToFirebase(userProfile: Profile) {
-        val uid = userProfile.id  // Assuming `uid` is used as the document ID
+        val uid = userProfile.id
         uid?.let {
             firebaseRef.collection("Profile")
-                .document(it) // Use uid as the document ID
+                .document(it)
                 .set(userProfile)
                 .addOnSuccessListener {
-                    // On success, user profile is stored
-                    Toast.makeText(this, "Profile added to Firestore ", Toast.LENGTH_SHORT).show()
+                    Log.d("Firestore", "User profile added successfully")
+                    Toast.makeText(this, "Profile added to Firestore", Toast.LENGTH_SHORT).show()
                 }
-                .addOnFailureListener {
-                    Toast.makeText(this, "${it.message}", Toast.LENGTH_SHORT).show()
+                .addOnFailureListener { e ->
+                    Log.e("Firestore", "Error adding profile", e)
+                    Toast.makeText(this, "Failed to add profile: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
         } ?: run {
+            Log.e("Firestore", "User ID is null")
             Toast.makeText(this, "User ID is null. Cannot add profile to database.", Toast.LENGTH_SHORT).show()
         }
     }
