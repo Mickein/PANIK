@@ -4,44 +4,45 @@ name: CI
 
 # Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "Mickein" branch
   push:
     branches: [ "Mickein" ]
   pull_request:
     branches: [ "Mickein" ]
-
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 jobs:
   build:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
     steps:
-      # Checks out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Sets up JDK for Android development
       - name: Set up JDK
         uses: actions/setup-java@v2
         with:
-          java-version: '17' 
-          distribution: 'temurin'  
+          java-version: '17'  
+          distribution: 'temurin' 
 
-      # Grants execute permission for gradlew
+      - name: Create local.properties
+        run: echo "sdk.dir=/opt/android-sdk" > local.properties
+
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      # Builds the project
+      - name: Install Android SDK
+        run: |
+          mkdir -p /opt/android-sdk
+          wget -q https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip -O cmdline-tools.zip
+          unzip cmdline-tools.zip -d /opt/android-sdk
+          yes | sdkmanager --sdk_root=/opt/android-sdk --licenses
+          sdkmanager --sdk_root=/opt/android-sdk "platform-tools" "platforms;android-33" "build-tools;33.0.0"
+
       - name: Build with Gradle
         run: ./gradlew build
 
-      # Runs unit tests
       - name: Run unit tests
         run: ./gradlew test
 
-      # Runs instrumentation tests
       - name: Run instrumentation tests
         run: ./gradlew connectedAndroidTest
