@@ -114,7 +114,7 @@ class LoginPage : AppCompatActivity() {
                 }
             }
     }
-
+    //OpenAI. (2024). Conversation on Signing in With Google. Available at https://www.openai.com
     private fun signInWithGoogle() {
         googleSignInClient.signOut().addOnCompleteListener { task ->
             if (task.isSuccessful) {
@@ -181,7 +181,7 @@ class LoginPage : AppCompatActivity() {
         }
     }
 
-
+    //OpenAI. (2024). Conversation on Adding User To Firebase. Available at https://www.openai.com
     private fun addUserToFirebase(userProfile: Profile) {
         val uid = userProfile.id
         uid?.let {
@@ -190,7 +190,6 @@ class LoginPage : AppCompatActivity() {
                 .set(userProfile)
                 .addOnSuccessListener {
                     Log.d("Firestore", "User profile added successfully")
-                    Toast.makeText(this, "Profile added to Firestore", Toast.LENGTH_SHORT).show()
                 }
                 .addOnFailureListener { e ->
                     Log.e("Firestore", "Error adding profile", e)

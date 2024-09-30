@@ -171,9 +171,6 @@ class ReportFragment : Fragment() {
             if (isChecked) {
                 // When the checkbox is checked, check fine location permissions and get current location
                 checkLocationPermissionsAndDisplay()
-            } else {
-                // Optionally, handle the case when the checkbox is unchecked
-                Toast.makeText(context, "Location checkbox unchecked", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -185,7 +182,6 @@ class ReportFragment : Fragment() {
             } else {
                 uploadedImage = false
                 image.setImageResource(R.drawable.image_upload)
-                Toast.makeText(context, "Picture checkbox unchecked", Toast.LENGTH_SHORT).show()
                 image.visibility = View.INVISIBLE
             }
         }
@@ -307,7 +303,6 @@ class ReportFragment : Fragment() {
                     val latLng = LatLng(it.latitude, it.longitude)
                     currentLat = it.latitude
                     currentLng = it.longitude
-                    Toast.makeText(context, "Location: $latLng", Toast.LENGTH_SHORT).show()
                 }
             }.addOnFailureListener {
                 Toast.makeText(context, "Failed to get current location", Toast.LENGTH_SHORT).show()

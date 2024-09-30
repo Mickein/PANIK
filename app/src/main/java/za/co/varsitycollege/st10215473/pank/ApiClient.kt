@@ -5,14 +5,15 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object ApiClient {
     private const val BASE_URL = "https://api-2-pan-k.onrender.com/"
-    private val retrofit: Retrofit by lazy {
-        Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-    }
+    private var retrofit: Retrofit? = null
 
     fun getClient(): Retrofit {
-        return retrofit
+        if (retrofit == null) {
+            retrofit = Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create()) // Use Gson for JSON deserialization
+                .build()
+        }
+        return retrofit!!
     }
 }

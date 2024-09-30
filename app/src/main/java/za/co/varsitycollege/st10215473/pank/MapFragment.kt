@@ -49,6 +49,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         const val MAX_DISTANCE_KM = 50 // Default maximum distance
     }
 
+    //OpenAI. (2024). Conversation on Displaying Map Locations. Available at https://www.openai.com
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
