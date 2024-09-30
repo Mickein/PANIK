@@ -49,7 +49,7 @@ class ProfileActivity : AppCompatActivity() {
                         // Get the fields from the document
                         val name = document.getString("name") ?: "Unknown Name"
                         val email = document.getString("email") ?: "Unknown Email"
-                        val surname = document.getString("surname") ?: "Unknown Sunrmame"
+                        val surname = document.getString("surname") ?: "Unknown Surmame"
                         val number = document.getString("number") ?: "Unknown Number"
                         val profilePicUrl = document.getString("profilePic") ?: ""
 

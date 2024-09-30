@@ -58,6 +58,7 @@ class ReportHistoryActivity : AppCompatActivity() {
         rvReportHistory.addItemDecoration(SpacesItemDecoration(spacingInPixels))
     }
 
+    //OpenAI. (2024). Conversation on Report History. Available at https://www.openai.com
     private fun fetchUserReports(userId: String?) {
         val reportApi = ApiClient.getClient().create(ReportApi::class.java)
         if (userId != null) {
@@ -66,9 +67,7 @@ class ReportHistoryActivity : AppCompatActivity() {
                     if (response.isSuccessful && response.body() != null) {
                         reportList.clear()  // Clear previous reports
                         reportList.addAll(response.body()!!)  // Add new reports
-
-                        Toast.makeText(this@ReportHistoryActivity, "Reports Fetched ${reportList.size}", Toast.LENGTH_SHORT).show()
-                        Log.d("MainActivity", "Reports fetched: ${reportList.size}")
+                        Log.d("ReportHistoryActivity", "Reports fetched: ${reportList.size}")
                     } else {
                         Log.e("MainActivity", "Failed to retrieve reports: ${response.message()}")
                     }
@@ -83,3 +82,4 @@ class ReportHistoryActivity : AppCompatActivity() {
         }
     }
 }
+

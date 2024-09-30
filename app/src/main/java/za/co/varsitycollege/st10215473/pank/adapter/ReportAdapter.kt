@@ -44,16 +44,11 @@ class ReportAdapter(
                 }
 
                 // Display address based on whether GeoPoint or manually entered address is available
-                if (currentItem.currentLocation != null) {
+                if (currentItem.location != null) {
                     // Convert GeoPoint to address using reverse geocoding
-                    val geoPoint = currentItem.currentLocation
+                    val geoPoint = currentItem.location
                     val address = getAddressFromGeoPoint(geoPoint)
                     txtLocationHistory.text = address ?: "Unknown location"
-                } else if (!currentItem.address.isNullOrEmpty()) {
-                    // Display manually entered address
-                    txtLocationHistory.text = currentItem.address
-                } else {
-                    txtLocationHistory.text = "No address available"
                 }
             }
         }
