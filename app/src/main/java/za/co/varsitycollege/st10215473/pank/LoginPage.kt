@@ -170,11 +170,7 @@ class LoginPage : AppCompatActivity() {
                     addUserToFirebase(userProfile)
 
                     // Redirect to ProfileActivity
-                    val intent = Intent(this, ProfileActivity::class.java).apply {
-                        putExtra("name", displayName)
-                        putExtra("email", email)
-                        putExtra("profilePic", account.photoUrl.toString())
-                    }
+                    val intent = Intent(this, ProfileActivity::class.java)
                     startActivity(intent)
                 } else {
                     Toast.makeText(this, "User data unavailable", Toast.LENGTH_SHORT).show()

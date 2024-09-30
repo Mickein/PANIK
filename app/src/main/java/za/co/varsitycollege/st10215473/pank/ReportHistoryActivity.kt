@@ -13,6 +13,7 @@ import za.co.varsitycollege.st10215473.pank.adapter.ReportAdapter
 import za.co.varsitycollege.st10215473.pank.data.Reports
 import za.co.varsitycollege.st10215473.pank.decorator.SpacesItemDecoration
 import android.util.Log
+import android.widget.Toast
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -65,11 +66,14 @@ class ReportHistoryActivity : AppCompatActivity() {
                     if (response.isSuccessful && response.body() != null) {
                         reportList.clear()  // Clear previous reports
                         reportList.addAll(response.body()!!)  // Add new reports
-                        reportAdapter.notifyDataSetChanged()  // Notify the adapter
+
+                        Toast.makeText(this@ReportHistoryActivity, "Reports Fetched ${reportList.size}", Toast.LENGTH_SHORT).show()
                         Log.d("MainActivity", "Reports fetched: ${reportList.size}")
                     } else {
                         Log.e("MainActivity", "Failed to retrieve reports: ${response.message()}")
                     }
+                    val historyAdapter = ReportAdapter(reportList, this@ReportHistoryActivity)
+                    rvReportHistory.adapter = historyAdapter
                 }
 
                 override fun onFailure(call: Call<List<Reports>>, t: Throwable) {
