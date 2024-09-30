@@ -88,7 +88,7 @@ class RegisterPage : AppCompatActivity() {
                     val user = authReg.currentUser
                     val uid = user?.uid
                     if (user != null) {
-                        val userProfile = Profile(uid, name, surname, number, email, "", "", "")
+                        val userProfile = Profile(uid, name, surname, number, email, "")
                         addUserToFirebase(userProfile)
                     }
                 } else {
