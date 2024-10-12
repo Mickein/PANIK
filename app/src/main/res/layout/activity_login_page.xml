@@ -73,6 +73,7 @@
         android:layout_marginStart="120dp"
         android:layout_marginTop="232dp"
         android:text="Log-in"
+        android:textAlignment="center"
         android:textColor="#000000"
         android:textSize="40sp"
         android:textStyle="bold"
@@ -198,6 +199,17 @@
         app:layout_constraintStart_toStartOf="@+id/btnSignUp"
         app:layout_constraintTop_toBottomOf="@+id/imageView"
         app:layout_constraintVertical_bias="0.872" />
+
+    <Button
+        android:id="@+id/btnLanguageTranslate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Translate"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/imageView3"
+        app:layout_constraintVertical_bias="0.959" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
