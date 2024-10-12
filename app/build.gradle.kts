@@ -82,5 +82,8 @@ dependencies {
     implementation(libs.picasso)
     implementation(libs.retrofit)
     implementation(libs.gson)
+    implementation(libs.platform)
+    implementation(libs.analytics)
+    implementation(libs.translate)
 
 }
