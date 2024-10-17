@@ -39,8 +39,11 @@ class LoginPage : AppCompatActivity() {
 
     lateinit var btnLanguageTranslate:Button
     lateinit  var txtLogin:TextView
+
     var originalText:String=""
     private lateinit var translator: Translator
+
+    private lateinit var textViewsToTranslate: List<TextView>
     //variables for firebase authentication
     private lateinit var authr: FirebaseAuth
     private lateinit var passwordEdit: EditText
@@ -55,21 +58,6 @@ class LoginPage : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_login_page)
-
-        btnLanguageTranslate = findViewById(R.id.btnLanguageTranslate)
-        txtLogin = findViewById(R.id.txtLogin)
-        val options = TranslatorOptions.Builder()
-            .setSourceLanguage(TranslateLanguage.ENGLISH)
-            .setTargetLanguage(TranslateLanguage.TAMIL) // Change target language if necessary
-            .build()
-
-        translator = com.google.mlkit.nl.translate.Translation.getClient(options)
-        btnLanguageTranslate.setOnClickListener{
-            originalText = txtLogin.text.toString()
-            // Prompt to download the translation model if needed
-            downloadTranslationModel()
-        }
-
 
         firebaseRef = FirebaseFirestore.getInstance()
         auth = Firebase.auth
@@ -120,36 +108,7 @@ class LoginPage : AppCompatActivity() {
 
 
     }
-    private fun downloadTranslationModel() {
-        val conditions = DownloadConditions.Builder()
-            .requireWifi()  // Only download the model when on Wi-Fi
-            .build()
 
-        // Download the model if it's not available
-        translator.downloadModelIfNeeded(conditions)
-            .addOnSuccessListener {
-                Toast.makeText(this, "Translation model downloaded", Toast.LENGTH_SHORT).show()
-                // Now that the model is downloaded, you can perform the translation
-                translateText()
-            }
-            .addOnFailureListener { exception ->
-                Toast.makeText(this, "Failed to download model: ${exception.message}", Toast.LENGTH_SHORT).show()
-            }
-    }
-
-    private fun translateText() {
-        Log.d("Translation", "Translating text: $originalText")
-        translator.translate(originalText)
-            .addOnSuccessListener { translatedText ->
-                // Update the TextView with the translated text
-                Log.d("Translation", "Translated text: $translatedText")
-                txtLogin.text = translatedText
-            }
-            .addOnFailureListener { exception ->
-                Log.e("Translation", "Translation failed: ${exception.message}")
-                Toast.makeText(this, "Translation failed: ${exception.message}", Toast.LENGTH_SHORT).show()
-            }
-    }
     private fun LoginUser(email: String, password: String) {
         authr.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
