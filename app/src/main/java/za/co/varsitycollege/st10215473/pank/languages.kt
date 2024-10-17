@@ -9,6 +9,7 @@ import com.google.mlkit.common.model.DownloadConditions
 import com.google.mlkit.nl.translate.TranslateLanguage
 import com.google.mlkit.nl.translate.Translator
 import com.google.mlkit.nl.translate.TranslatorOptions
+import java.util.Locale
 
 class languages : AppCompatActivity() {
     lateinit var btnAfrikaans: Button
@@ -31,6 +32,31 @@ class languages : AppCompatActivity() {
         }
     }
 
+    private fun saveLanguagePreference(languageCode: String) {
+        val sharedPref = getSharedPreferences("AppSettings", MODE_PRIVATE)
+        val editor = sharedPref.edit()
+        editor.putString("selectedLanguage", languageCode)
+        editor.apply()
+        // Apply the language preference immediately
+        applyLanguage(languageCode)
+    }
+    private fun applyLanguage(languageCode: String) {
+        val locale = Locale(languageCode)
+        Locale.setDefault(locale)
+
+        val config = resources.configuration
+        config.setLocale(locale)
+
+        // Update the current context with the new language settings
+        resources.updateConfiguration(config, resources.displayMetrics)
+
+        // Restart the activity to apply the language change
+        val refreshIntent = Intent(this, SettingsPage::class.java)
+        startActivity(refreshIntent)
+        finish()  // Close the current activity
+    }
+
+
     private fun setupTranslator(targetLanguage: String) {
         val options = TranslatorOptions.Builder()
             .setSourceLanguage(TranslateLanguage.ENGLISH)
@@ -47,6 +73,9 @@ class languages : AppCompatActivity() {
             .addOnSuccessListener {
                 Toast.makeText(this, "Model downloaded. Translating...", Toast.LENGTH_SHORT).show()
                 translateSettingsActivityText()
+
+                // Save the selected language in SharedPreferences
+                saveLanguagePreference(targetLanguage)
             }
             .addOnFailureListener { exception ->
                 Toast.makeText(this, "Failed to download model: ${exception.message}", Toast.LENGTH_SHORT).show()

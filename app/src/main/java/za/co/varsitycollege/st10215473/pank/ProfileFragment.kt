@@ -88,8 +88,8 @@ class ProfileFragment : Fragment() {
         openProfileActivity = view.findViewById(R.id.btnGoToProfilePage)
 
         openSettingsButton.setOnClickListener {
-            val intent = Intent(requireContext(), SettingsPage::class.java)
-        //    intent.putExtra("openProfile", true)  // Indicate that we want to open the ProfileFragment on return
+            val intent = Intent(context, SettingsPage::class.java)
+            intent.putExtra("openProfile", true)  // Indicate that we want to open the ProfileFragment on return
             startActivity(intent)
         }
 
@@ -161,4 +161,6 @@ class ProfileFragment : Fragment() {
                 }
         }
     }
+
+
 }
