@@ -23,6 +23,7 @@ class SettingsPage : AppCompatActivity() {
         btnNotifications = findViewById(R.id.btnNotifications)
         btnBackToProfile = findViewById(R.id.btnBackToProfile)
 
+
         // Set an onClickListener for btnLanguage to navigate to the languages activity
         btnLanguage.setOnClickListener {
             val intent = Intent(this, languages::class.java)
@@ -33,9 +34,6 @@ class SettingsPage : AppCompatActivity() {
             finish()  // This will close the SettingsActivity and return to MainActivity
         }
 
-
-
-
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -43,6 +41,7 @@ class SettingsPage : AppCompatActivity() {
 
         // Check if result is OK and we have received data
         if (requestCode == REQUEST_CODE_TRANSLATION && resultCode == RESULT_OK) {
+        if (requestCode == 1 && resultCode == RESULT_OK) {
             val translatedTexts = data?.getStringArrayListExtra("translatedTexts")
 
             if (translatedTexts != null && translatedTexts.size == 4) {
