@@ -18,6 +18,7 @@ googleServices = "4.4.2"
 firebaseStorage = "21.0.0"
 firebaseDatabaseKtx = "21.0.0"
 picasso = "2.8"
+firebase = "20.1.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -42,6 +43,12 @@ firebase-database-ktx = { group = "com.google.firebase", name = "firebase-databa
 picasso = {group = "com.squareup.picasso", name = "picasso", version.ref = "picasso"}
 retrofit = "com.squareup.retrofit2:retrofit:2.9.0"
 gson = "com.squareup.retrofit2:converter-gson:2.9.0"
+platform = "com.google.firebase:firebase-bom:33.4.0"
+analytics = { group = "com.google.firebase", name = "firebase-analytics-ktx", version.ref = "firebase" }
+translate = "com.google.mlkit:translate:17.0.3"
+livedata ="androidx.lifecycle:lifecycle-livedata-ktx:2.6.2"
+viewModel ="androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2"
+
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

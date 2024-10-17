@@ -26,11 +26,24 @@ import com.google.firebase.auth.auth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
+import com.google.mlkit.common.model.DownloadConditions
 import za.co.varsitycollege.st10215473.pank.data.Profile
+import com.google.mlkit.nl.translate.TranslateLanguage
+import com.google.mlkit.nl.translate.Translator
+import com.google.mlkit.nl.translate.TranslatorOptions
+import com.google.mlkit.nl.translate.Translation
 
 class LoginPage : AppCompatActivity() {
     //variable for going to dashboard page if user has a registered account
     lateinit var openDash: TextView
+
+    lateinit var btnLanguageTranslate:Button
+    lateinit  var txtLogin:TextView
+
+    var originalText:String=""
+    private lateinit var translator: Translator
+
+    private lateinit var textViewsToTranslate: List<TextView>
     //variables for firebase authentication
     private lateinit var authr: FirebaseAuth
     private lateinit var passwordEdit: EditText
@@ -95,6 +108,7 @@ class LoginPage : AppCompatActivity() {
 
 
     }
+
     private fun LoginUser(email: String, password: String) {
         authr.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
