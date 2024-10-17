@@ -168,6 +168,13 @@ class ReportFragment : Fragment() {
             showDialog(otherButton, reportForm)
         }
 
+        helpButton.setOnClickListener {
+            Toast.makeText(requireContext(), "Feature Coming Soon", Toast.LENGTH_SHORT).show()
+        }
+        panicButton.setOnClickListener {
+            Toast.makeText(requireContext(), "Feature Coming Soon", Toast.LENGTH_SHORT).show()
+        }
+
 
         locationCheckBox.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
