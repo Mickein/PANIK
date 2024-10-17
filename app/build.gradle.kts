@@ -85,5 +85,6 @@ dependencies {
     implementation(libs.platform)
     implementation(libs.analytics)
     implementation(libs.translate)
-
+    implementation(libs.livedata)
+    implementation(libs.viewModel)
 }

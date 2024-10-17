@@ -12,6 +12,9 @@ import android.widget.TextView
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.mlkit.nl.translate.TranslateLanguage
+import com.google.mlkit.nl.translate.Translator
+import com.google.mlkit.nl.translate.TranslatorOptions
 import com.squareup.picasso.Picasso
 
 class ProfileFragment : Fragment() {
@@ -20,6 +23,15 @@ class ProfileFragment : Fragment() {
     private lateinit var emailText: TextView
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var firebaseRef: FirebaseFirestore
+
+    // Buttons for translation
+    private lateinit var openSettingsButton: Button
+    private lateinit var openAboutDevsButton: Button
+    private lateinit var openReportBugsButton: Button
+    private lateinit var openLogoutButton: Button
+    private lateinit var openProfileActivity: Button
+
+    private lateinit var translator: Translator
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -70,11 +82,11 @@ class ProfileFragment : Fragment() {
         }
 
         // Find the Buttons in the fragment layout
-        val openSettingsButton = view.findViewById<Button>(R.id.btnSettings)
-        val openAboutDevsButton = view.findViewById<Button>(R.id.btnAboutDevs)
-        val openReportBugsButton = view.findViewById<Button>(R.id.btnReportBugs)
-        val openLogoutButton = view.findViewById<Button>(R.id.btnlogout)
-        val openProfileActivity = view.findViewById<Button>(R.id.btnGoToProfilePage)
+        openSettingsButton = view.findViewById(R.id.btnSettings)
+        openAboutDevsButton = view.findViewById(R.id.btnAboutDevs)
+        openReportBugsButton = view.findViewById(R.id.btnReportBugs)
+        openLogoutButton = view.findViewById(R.id.btnlogout)
+        openProfileActivity = view.findViewById(R.id.btnGoToProfilePage)
 
         // Set the onClickListener for the Buttons
         openSettingsButton.setOnClickListener {
@@ -86,9 +98,11 @@ class ProfileFragment : Fragment() {
         openAboutDevsButton.setOnClickListener {
             Toast.makeText(requireContext(), "Feature Coming Soon", Toast.LENGTH_SHORT).show()
         }
+
         openReportBugsButton.setOnClickListener {
             Toast.makeText(requireContext(), "Feature Coming Soon", Toast.LENGTH_SHORT).show()
         }
+
         openLogoutButton.setOnClickListener {
             Toast.makeText(requireContext(), "Feature Coming Soon", Toast.LENGTH_SHORT).show()
         }
@@ -99,5 +113,54 @@ class ProfileFragment : Fragment() {
         }
 
         return view
+    }
+
+    // Function to translate button texts
+    fun translateButtonTexts(targetLanguage: String) {
+        val options = TranslatorOptions.Builder()
+            .setSourceLanguage(TranslateLanguage.ENGLISH)
+            .setTargetLanguage(targetLanguage)
+            .build()
+
+        translator = com.google.mlkit.nl.translate.Translation.getClient(options)
+
+        val conditions = com.google.mlkit.common.model.DownloadConditions.Builder()
+            .requireWifi()
+            .build()
+
+        translator.downloadModelIfNeeded(conditions)
+            .addOnSuccessListener {
+                // Translation texts
+                translateTexts(
+                    listOf(
+                        "SETTINGS", "ABOUT DEVS", "REPORT BUGS", "LOGOUT"
+                    )
+                )
+            }
+            .addOnFailureListener { exception ->
+                Toast.makeText(requireContext(), "Failed to download model: ${exception.message}", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    // Helper function to translate and apply translations to buttons
+    private fun translateTexts(buttonTexts: List<String>) {
+        val translatedTexts = mutableListOf<String>()
+
+        for (text in buttonTexts) {
+            translator.translate(text)
+                .addOnSuccessListener { translatedText ->
+                    translatedTexts.add(translatedText)
+                    // Set button texts when translation completes
+                    if (translatedTexts.size == buttonTexts.size) {
+                        openSettingsButton.text = translatedTexts[0]
+                        openAboutDevsButton.text = translatedTexts[1]
+                        openReportBugsButton.text = translatedTexts[2]
+                        openLogoutButton.text = translatedTexts[3]
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    Toast.makeText(requireContext(), "Translation failed: ${exception.message}", Toast.LENGTH_SHORT).show()
+                }
+        }
     }
 }

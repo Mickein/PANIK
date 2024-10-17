@@ -2,42 +2,51 @@ package za.co.varsitycollege.st10215473.pank
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import android.widget.Button
 import android.widget.TextView
-import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 
 class SettingsPage : AppCompatActivity() {
-    private lateinit var backToProfile: TextView
-    private lateinit var toReportHistory: Button
+    lateinit var txtBackToProfile: TextView
+    lateinit var btnReportHistory: Button
+    lateinit var btnLanguage: Button
+    lateinit var btnNotifications: Button
+    lateinit var btnBackToProfile:Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_settings_page)
 
-        backToProfile = findViewById(R.id.btnBackToProfile)
-        backToProfile.setOnClickListener(View.OnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-        })
-        toReportHistory = findViewById(R.id.btnReportHistory)
-        toReportHistory.setOnClickListener(View.OnClickListener {
-            val intent = Intent(this, ReportHistoryActivity::class.java)
-            startActivity(intent)
-        })
+        txtBackToProfile = findViewById(R.id.txtBackToProfile)
+        btnReportHistory = findViewById(R.id.btnReportHistory)
+        btnLanguage = findViewById(R.id.btnLanguage)
+        btnNotifications = findViewById(R.id.btnNotifications)
 
-        val openNotificationsButton = findViewById<Button>(R.id.btnNotifications)
-        val openLanguageButton = findViewById<Button>(R.id.btnLanguage)
-        openNotificationsButton.setOnClickListener {
-            Toast.makeText(baseContext, "Feature Coming Soon", Toast.LENGTH_SHORT).show()
+        // Set an onClickListener for btnLanguage to navigate to the languages activity
+        btnLanguage.setOnClickListener {
+            val intent = Intent(this, languages::class.java)
+            startActivityForResult(intent, 1)
         }
-        openLanguageButton.setOnClickListener {
-            Toast.makeText(baseContext, "Feature Coming Soon", Toast.LENGTH_SHORT).show()
+
+
+
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        // Check if result is OK and we have received data
+        if (requestCode == 1 && resultCode == RESULT_OK) {
+            val translatedTexts = data?.getStringArrayListExtra("translatedTexts")
+
+            if (translatedTexts != null && translatedTexts.size == 4) {
+                // Update the text of the buttons with the translated values
+                txtBackToProfile.text = translatedTexts[0] // "Back to Profile"
+                btnReportHistory.text = translatedTexts[1] // "Report History"
+                btnLanguage.text = translatedTexts[2] // "Language"
+                btnNotifications.text = translatedTexts[3] // "Notifications"
+            }
         }
     }
+
 }
