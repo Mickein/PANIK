@@ -79,6 +79,15 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+//    override fun onResume() {
+//        super.onResume()
+//
+//        // Check if the intent has the "openProfile" extra and replace the fragment accordingly
+//        if (intent?.getBooleanExtra("openProfile", false) == true) {
+//            replaceFragment(ProfileFragment()) // Open ProfileFragment when returning
+//            bottomNavBar.setItemSelected(R.id.profile) // Update the navigation bar state
+//        }
+//    }
 
 
 }

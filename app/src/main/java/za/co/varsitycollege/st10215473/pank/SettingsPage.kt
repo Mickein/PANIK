@@ -21,12 +21,18 @@ class SettingsPage : AppCompatActivity() {
         btnReportHistory = findViewById(R.id.btnReportHistory)
         btnLanguage = findViewById(R.id.btnLanguage)
         btnNotifications = findViewById(R.id.btnNotifications)
+        btnBackToProfile = findViewById(R.id.btnBackToProfile)
 
         // Set an onClickListener for btnLanguage to navigate to the languages activity
         btnLanguage.setOnClickListener {
             val intent = Intent(this, languages::class.java)
-            startActivityForResult(intent, 1)
+            startActivityForResult(intent, REQUEST_CODE_TRANSLATION)
         }
+
+        btnBackToProfile.setOnClickListener {
+            finish()  // This will close the SettingsActivity and return to MainActivity
+        }
+
 
 
 
@@ -36,7 +42,7 @@ class SettingsPage : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
 
         // Check if result is OK and we have received data
-        if (requestCode == 1 && resultCode == RESULT_OK) {
+        if (requestCode == REQUEST_CODE_TRANSLATION && resultCode == RESULT_OK) {
             val translatedTexts = data?.getStringArrayListExtra("translatedTexts")
 
             if (translatedTexts != null && translatedTexts.size == 4) {
@@ -47,6 +53,10 @@ class SettingsPage : AppCompatActivity() {
                 btnNotifications.text = translatedTexts[3] // "Notifications"
             }
         }
+
+    }
+    companion object {
+        const val REQUEST_CODE_TRANSLATION = 1001
     }
 
 }

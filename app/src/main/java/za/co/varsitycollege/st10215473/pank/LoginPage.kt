@@ -51,7 +51,6 @@ class LoginPage : AppCompatActivity() {
     //variable for going to register page if user doesnt have an account
     private lateinit var goToReg: TextView
     private lateinit var firebaseRef: FirebaseFirestore
-
     private lateinit var auth: FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient
     override fun onCreate(savedInstanceState: Bundle?) {
