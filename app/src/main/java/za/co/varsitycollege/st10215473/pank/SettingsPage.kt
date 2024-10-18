@@ -42,10 +42,10 @@ class SettingsPage : AppCompatActivity() {
         }
 
         btnBackToProfile.setOnClickListener {
+            val intent = Intent()
+            setResult(RESULT_OK, intent)
             finish()  // This will close the SettingsActivity and return to MainActivity
         }
-
-
 
 
     }
