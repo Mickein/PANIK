@@ -126,15 +126,6 @@ class LoginPage : AppCompatActivity() {
                 LoginUser(email, password)
             }
         })
-
-        // Set up biometric prompt handling
-        setupBiometrics()
-
-        // Show biometric prompt when the activity is opened
-        promptManager.showBiometricPrompt(
-            title = "Biometric Authentication",
-            description = "Please authenticate to access PAN!K"
-        )
     }
 
     private fun LoginUser(email: String, password: String) {
@@ -144,6 +135,16 @@ class LoginPage : AppCompatActivity() {
                     val editor = sharedPreferences.edit()
                     editor.putBoolean("isLoggedIn", true)
                     editor.apply()
+
+
+                    // Set up biometric prompt handling
+                    setupBiometrics()
+
+                    // Show biometric prompt when the activity is opened
+                    promptManager.showBiometricPrompt(
+                        title = "Biometric Authentication",
+                        description = "Please authenticate to access PAN!K"
+                    )
 
                     // Sign in success, update UI with the signed-in user's information
                     Toast.makeText(baseContext, "Login Successful", Toast.LENGTH_LONG).show()
@@ -218,6 +219,16 @@ class LoginPage : AppCompatActivity() {
 
                     // Store user profile in Firestore
                     addUserToFirebase(userProfile)
+
+
+                    // Set up biometric prompt handling
+                    setupBiometrics()
+
+                    // Show biometric prompt when the activity is opened
+                    promptManager.showBiometricPrompt(
+                        title = "Biometric Authentication",
+                        description = "Please authenticate to access PAN!K"
+                    )
 
                     // Redirect to ProfileActivity
                     val intent = Intent(this, MainActivity::class.java)
