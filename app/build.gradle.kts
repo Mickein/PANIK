@@ -91,4 +91,5 @@ dependencies {
     implementation(libs.translate)
     implementation(libs.livedata)
     implementation(libs.viewModel)
+    implementation(libs.biometrics)
 }
