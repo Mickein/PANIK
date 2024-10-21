@@ -49,8 +49,7 @@ class SettingsPage : AppCompatActivity() {
         btnNotifications = findViewById(R.id.btnNotifications)
         btnBackToProfile = findViewById(R.id.btnBackToProfile)
 
-        // Set up biometric prompt handling
-        setupBiometrics()
+
 
         // Load and apply the saved language when the activity opens
         val savedLanguage = loadLanguagePreference()
@@ -69,6 +68,15 @@ class SettingsPage : AppCompatActivity() {
             setResult(RESULT_OK, intent)
             finish()  // This will close the SettingsActivity and return to MainActivity
         }
+
+        // Set up biometric prompt handling
+            setupBiometrics()
+
+        // Show biometric prompt when the activity is opened
+        promptManager.showBiometricPrompt(
+            title = "Biometric Authentication",
+            description = "Please authenticate to access Settings Features"
+        )
 
     }
 
@@ -167,10 +175,5 @@ class SettingsPage : AppCompatActivity() {
         const val REQUEST_CODE_TRANSLATION = 1001
     }
 
-        // Show biometric prompt when the activity is opened
-        promptManager.showBiometricPrompt(
-            title = "Biometric Authentication",
-            description = "Please authenticate to access Settings Features"
-        )
 
 }
