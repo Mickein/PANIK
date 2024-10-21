@@ -1,5 +1,6 @@
 package za.co.varsitycollege.st10215473.pank
 
+import BaseActivity
 import MapFragment
 import android.content.Intent
 import android.graphics.Rect
@@ -14,7 +15,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.ismaeldivita.chipnavigation.ChipNavigationBar
 import java.util.Locale
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
     private lateinit var bottomNavBar: ChipNavigationBar
     private lateinit var rootView: View
 
