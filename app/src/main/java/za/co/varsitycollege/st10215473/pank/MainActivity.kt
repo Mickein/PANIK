@@ -1,6 +1,8 @@
 package za.co.varsitycollege.st10215473.pank
 
+import BaseActivity
 import MapFragment
+import android.content.Intent
 import android.graphics.Rect
 import android.os.Bundle
 import android.view.View
@@ -11,8 +13,9 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.ismaeldivita.chipnavigation.ChipNavigationBar
+import java.util.Locale
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
     private lateinit var bottomNavBar: ChipNavigationBar
     private lateinit var rootView: View
 
@@ -33,6 +36,25 @@ class MainActivity : AppCompatActivity() {
         replaceFragment(FeedFragment())
 
         observeKeyboardVisibility()
+
+        // Load saved language preference
+        val sharedPref = getSharedPreferences("AppSettings", MODE_PRIVATE)
+        val savedLanguage = sharedPref.getString("selectedLanguage", "en")  // Default to English if not set
+
+        // Apply the saved language
+        applyLanguage(savedLanguage!!)
+
+
+    }
+    private fun applyLanguage(languageCode: String) {
+        val locale = Locale(languageCode)
+        Locale.setDefault(locale)
+
+        val config = resources.configuration
+        config.setLocale(locale)
+
+        // Update the current context with the new language settings
+        resources.updateConfiguration(config, resources.displayMetrics)
 
     }
 
@@ -79,6 +101,15 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+//    override fun onResume() {
+//        super.onResume()
+//
+//        // Check if the intent has the "openProfile" extra and replace the fragment accordingly
+//        if (intent?.getBooleanExtra("openProfile", false) == true) {
+//            replaceFragment(ProfileFragment()) // Open ProfileFragment when returning
+//            bottomNavBar.setItemSelected(R.id.profile) // Update the navigation bar state
+//        }
+//    }
 
 
 }

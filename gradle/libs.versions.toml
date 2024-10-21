@@ -1,6 +1,6 @@
 [versions]
 agp = "8.3.1"
-kotlin = "2.0.21"
+kotlin = "1.9.0"
 coreKtx = "1.13.1"
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -18,7 +18,7 @@ googleServices = "4.4.2"
 firebaseStorage = "21.0.0"
 firebaseDatabaseKtx = "21.0.0"
 picasso = "2.8"
-room = "2.6.1"
+
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -42,9 +42,6 @@ firebase-database-ktx = { group = "com.google.firebase", name = "firebase-databa
 picasso = {group = "com.squareup.picasso", name = "picasso", version.ref = "picasso"}
 retrofit = "com.squareup.retrofit2:retrofit:2.9.0"
 gson = "com.squareup.retrofit2:converter-gson:2.9.0"
-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
-room-compiler-ksp = { module = "androidx.room:room-compiler", version.ref = "room" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
