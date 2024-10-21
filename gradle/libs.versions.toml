@@ -52,6 +52,8 @@ analytics = { group = "com.google.firebase", name = "firebase-analytics-ktx", ve
 translate = "com.google.mlkit:translate:17.0.3"
 livedata ="androidx.lifecycle:lifecycle-livedata-ktx:2.6.2"
 viewModel ="androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2"
+biometrics = "androidx.biometric:biometric:1.1.0"
+
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
