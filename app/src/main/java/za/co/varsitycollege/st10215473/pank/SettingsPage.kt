@@ -47,7 +47,6 @@ class SettingsPage : AppCompatActivity() {
             finish()  // This will close the SettingsActivity and return to MainActivity
         }
 
-
     }
     // Method to load the saved language from SharedPreferences
     private fun loadLanguagePreference(): String? {

@@ -12,6 +12,10 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.mlkit.common.model.DownloadConditions
+import com.google.mlkit.nl.translate.TranslateLanguage
+import com.google.mlkit.nl.translate.Translator
+import com.google.mlkit.nl.translate.TranslatorOptions
 import za.co.varsitycollege.st10215473.pank.data.Profile
 
 class RegisterPage : AppCompatActivity() {
@@ -27,6 +31,15 @@ class RegisterPage : AppCompatActivity() {
     private lateinit var authReg: FirebaseAuth
     private lateinit var firebaseRef: FirebaseFirestore
     private lateinit var confirmPassword: EditText
+    private lateinit var RegisterTextview: TextView
+
+    private lateinit var emailtextview: TextView
+    private lateinit var passwordtextview: TextView
+    private lateinit var firstNametextview: TextView
+    private lateinit var surnametextview: TextView
+    private lateinit var phoneNumbertextview: TextView
+    private lateinit var confirmPasswordtextview: TextView
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,6 +55,21 @@ class RegisterPage : AppCompatActivity() {
         confirmPassword = findViewById(R.id.edtPasswordConfirmPasswordRegister)
         registerButton = findViewById(R.id.btnRegister)
         firebaseRef = FirebaseFirestore.getInstance()
+        RegisterTextview = findViewById(R.id.txtRegister)
+
+
+        firstNametextview = findViewById(R.id.txtRegisterName)
+        surnametextview = findViewById(R.id.txtRegisterSurname)
+        phoneNumbertextview = findViewById(R.id.txtRegisterNumber)
+        emailtextview = findViewById(R.id.txtRegisterEmail)
+        passwordtextview = findViewById(R.id.txtRegisterPassword)
+        confirmPasswordtextview = findViewById(R.id.txtRegisterConfirmPassword)
+
+        // Load and apply the saved language when the activity opens
+        val savedLanguage = loadLanguagePreference()
+        if (savedLanguage != null) {
+            applySavedLanguage(savedLanguage)
+        }
 
         //Firebase authentication
         authReg = Firebase.auth
@@ -70,6 +98,64 @@ class RegisterPage : AppCompatActivity() {
             }
         }
     }
+    // Method to load the saved language from SharedPreferences
+    private fun loadLanguagePreference(): String? {
+        val sharedPref = getSharedPreferences("AppSettings", MODE_PRIVATE)
+        return sharedPref.getString("selectedLanguage", null)
+    }
+    // Apply the translation based on the saved language
+    private fun applySavedLanguage(languageCode: String) {
+        val options = TranslatorOptions.Builder()
+            .setSourceLanguage(TranslateLanguage.ENGLISH)
+            .setTargetLanguage(languageCode)
+            .build()
+
+        val translator = com.google.mlkit.nl.translate.Translation.getClient(options)
+        val conditions = DownloadConditions.Builder().requireWifi().build()
+
+        translator.downloadModelIfNeeded(conditions)
+            .addOnSuccessListener {
+                translateSettingsActivityText(translator)
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, "Failed to apply saved language", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    private fun translateSettingsActivityText(translator: Translator) {
+        val textsToTranslate = listOf(
+            "Register","Name","Surname",
+            "Phone Number","Email Address",
+            "Password","Confirm Password",
+            "Register"
+        )
+
+        val translatedTexts = mutableListOf<String>()
+
+        for (text in textsToTranslate) {
+            translator.translate(text)
+                .addOnSuccessListener { translatedText ->
+                    translatedTexts.add(translatedText)
+                    if (translatedTexts.size == textsToTranslate.size) {
+                        RegisterTextview.text = translatedTexts[0]
+                        firstNametextview.text = translatedTexts[1]
+                        surnametextview.text = translatedTexts[2]
+                        phoneNumbertextview.text = translatedTexts[3]
+                        emailtextview.text = translatedTexts[4]
+                        passwordtextview.text = translatedTexts[5]
+                        confirmPasswordtextview.text = translatedTexts[6]
+                        registerButton.text = translatedTexts[7]
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    Toast.makeText(this, "Translation failed: ${exception.message}", Toast.LENGTH_SHORT).show()
+                }
+        }
+    }
+    companion object {
+        const val REQUEST_CODE_TRANSLATION = 1001
+    }
+
     fun openLoginPage()
     {
         openLog = findViewById(R.id.btnRegister)

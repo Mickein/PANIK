@@ -1,6 +1,7 @@
 import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -21,6 +22,7 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -33,6 +35,10 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.mlkit.common.model.DownloadConditions
+import com.google.mlkit.nl.translate.TranslateLanguage
+import com.google.mlkit.nl.translate.Translator
+import com.google.mlkit.nl.translate.TranslatorOptions
 import za.co.varsitycollege.st10215473.pank.R
 
 class MapFragment : Fragment(), OnMapReadyCallback {
@@ -43,6 +49,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var locationPermissionLauncher: ActivityResultLauncher<Array<String>>
     private lateinit var radiusDropdown: Spinner
     private lateinit var categoryDropdown: Spinner
+    private lateinit var distance : TextView
+    private lateinit var category: TextView
+    private val REQUEST_CODE_TRANSLATION = 1001  // Request code for SettingsPage
 
     companion object {
         const val LOCATION_REQUEST_CODE = 1000
@@ -54,7 +63,22 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_map, container, false)
+        val view = inflater.inflate(R.layout.fragment_map, container, false)
+
+        distance = view.findViewById(R.id.tvDistance)
+        category = view.findViewById(R.id.tvCategory)
+
+        radiusDropdown = view.findViewById(R.id.spnRadius) // For radius
+        categoryDropdown = view.findViewById(R.id.spnReport) // For category
+
+// Load and apply the saved language when the fragment opens
+        val savedLanguage = loadLanguagePreference()
+        if (savedLanguage != null) {
+            applySavedLanguage(savedLanguage)
+        }
+
+        return view
+
     }
 
     data class CategoryItem(val name: String, val iconResId: Int)
@@ -155,19 +179,175 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 refreshMapWithSelectedOptions()
             }
 
+
             override fun onNothingSelected(parent: AdapterView<*>) {}
+        }
+
+
+    }
+
+    // Override onActivityResult to check if language update was made
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_CODE_TRANSLATION && resultCode == AppCompatActivity.RESULT_OK) {
+            // Reapply translation when coming back from SettingsPage
+            val savedLanguage = loadLanguagePreference()
+            if (savedLanguage != null) {
+                applySavedLanguage(savedLanguage)  // Reapply the language
+            }
         }
     }
 
-    private fun refreshMapWithSelectedOptions() {
-        val selectedRadius = when (radiusDropdown.selectedItem.toString()) {
-            "Nearby" -> 10.0
-            "Suburb" -> 50.0
-            "Province" -> 1000.0
-            "Country" -> 50000.0
-            else -> 10.0 // Default to 10km
+    // Method to load the saved language from SharedPreferences
+    private fun loadLanguagePreference(): String? {
+        val sharedPref: SharedPreferences = requireActivity().getSharedPreferences("AppSettings", AppCompatActivity.MODE_PRIVATE)
+        return sharedPref.getString("selectedLanguage", null)
+    }
+
+    // Apply the translation based on the saved language
+    private fun applySavedLanguage(languageCode: String) {
+        val options = TranslatorOptions.Builder()
+            .setSourceLanguage(TranslateLanguage.ENGLISH)
+            .setTargetLanguage(languageCode)
+            .build()
+
+        val translator = com.google.mlkit.nl.translate.Translation.getClient(options)
+        val conditions = DownloadConditions.Builder().requireWifi().build()
+
+        translator.downloadModelIfNeeded(conditions)
+            .addOnSuccessListener {
+                translateProfileFragmentTexts(translator)
+                translateDropdownTexts(translator) // Call the method to translate dropdown texts
+            }
+            .addOnFailureListener {
+                Toast.makeText(requireContext(), "Failed to apply saved language", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    // Translate the text of the buttons in ProfileFragment
+    private fun translateProfileFragmentTexts(translator: Translator) {
+        val textsToTranslate = listOf(
+            "Select a Distance", "Select a Category"
+        )
+
+        val translatedTexts = mutableListOf<String>()
+
+        for (text in textsToTranslate) {
+            translator.translate(text)
+                .addOnSuccessListener { translatedText ->
+                    translatedTexts.add(translatedText)
+                    if (translatedTexts.size == textsToTranslate.size) {
+                        // Apply translations to the respective buttons
+                        distance.text = translatedTexts[0]
+                        category.text = translatedTexts[1]
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    Toast.makeText(requireContext(), "Translation failed: ${exception.message}", Toast.LENGTH_SHORT).show()
+                }
         }
-        val selectedCategory = categoryDropdown.selectedItem as CategoryItem
+    }
+
+    // Translate dropdown texts
+    private fun translateDropdownTexts(translator: Translator) {
+        val radiusOptions = arrayOf("Nearby", "Suburb", "Province", "Country")
+        val categoryOptions = arrayOf(
+            "All Reports",
+            "Wildfire",
+            "Suspicious Activity",
+            "Lost Pet",
+            "Crime",
+            "Vandalism",
+            "Excessive Noise",
+            "Missing Person",
+            "Other"
+        )
+
+        val allOptionsToTranslate = radiusOptions + categoryOptions
+        val translatedTexts = mutableListOf<String>()
+
+        for (text in allOptionsToTranslate) {
+            translator.translate(text)
+                .addOnSuccessListener { translatedText ->
+                    translatedTexts.add(translatedText)
+                    // Update dropdowns after translating all options
+                    if (translatedTexts.size == allOptionsToTranslate.size) {
+                        updateDropdowns(radiusOptions, translatedTexts.take(radiusOptions.size).toTypedArray(),
+                            translatedTexts.drop(radiusOptions.size).toTypedArray())
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    Toast.makeText(requireContext(), "Translation failed: ${exception.message}", Toast.LENGTH_SHORT).show()
+                }
+        }
+    }
+
+    private fun updateDropdowns(originalRadiusOptions: Array<String>, translatedRadiusOptions: Array<String>, translatedCategoryOptions: Array<String>) {
+        // Update radius dropdown
+        val radiusAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, translatedRadiusOptions)
+        radiusAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        radiusDropdown.adapter = radiusAdapter
+
+        // Create a list of original category items
+        val originalCategoryItems = arrayOf(
+            CategoryItem("All Reports", R.drawable.logo),
+            CategoryItem("Wildfire", R.drawable.fire_emoji),
+            CategoryItem("Suspicious Activity", R.drawable.suspicious),
+            CategoryItem("Lost Pet", R.drawable.pawprint),
+            CategoryItem("Crime", R.drawable.crime),
+            CategoryItem("Vandalism", R.drawable.vandalism),
+            CategoryItem("Excessive Noise", R.drawable.noisy),
+            CategoryItem("Missing Person", R.drawable.missing),
+            CategoryItem("Other", R.drawable.menu)
+        )
+
+        // Update category dropdown with translated options while retaining the original icons
+        val categoryAdapter = object : ArrayAdapter<CategoryItem>(requireContext(), R.layout.dropdown_item, originalCategoryItems.mapIndexed { index, item ->
+            CategoryItem(translatedCategoryOptions[index], item.iconResId)
+        }) {
+            override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+                return getCustomView(position, convertView, parent)
+            }
+
+            override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
+                return getCustomView(position, convertView, parent)
+            }
+
+            private fun getCustomView(position: Int, convertView: View?, parent: ViewGroup): View {
+                val inflater = LayoutInflater.from(context)
+                val view = convertView ?: inflater.inflate(R.layout.dropdown_item, parent, false)
+
+                val icon = view.findViewById<ImageView>(R.id.spinnerIcon)
+                val text = view.findViewById<TextView>(R.id.spinnerText)
+
+                val categoryItem = getItem(position)
+
+                // Set the icon and text for each category item
+                categoryItem?.let {
+                    icon.setImageResource(it.iconResId)
+                    text.text = it.name
+                }
+
+                return view
+            }
+        }
+
+        // Set the adapter to the category spinner
+        categoryDropdown.adapter = categoryAdapter
+    }
+
+    private fun refreshMapWithSelectedOptions() {
+        // Define the radius options
+        val radiusOptions = listOf("Nearby", "Suburb", "Province", "Country")
+        val radiusValues = listOf(10.0, 50.0, 1000.0, 50000.0)
+
+        // Get the selected radius index from the dropdown
+        val selectedRadiusIndex = radiusDropdown.selectedItemPosition
+        val selectedRadius = radiusValues.getOrElse(selectedRadiusIndex) { 10.0 } // Default to 10km
+
+        // Get the selected category index from the dropdown
+        val selectedCategoryIndex = categoryDropdown.selectedItemPosition
+         val selectedCategory = categoryDropdown.getItemAtPosition(selectedCategoryIndex) as CategoryItem
 
         // Check permissions and update the map
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {

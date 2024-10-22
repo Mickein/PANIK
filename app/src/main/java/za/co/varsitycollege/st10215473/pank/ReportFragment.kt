@@ -24,9 +24,11 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import android.Manifest
 import android.content.DialogInterface
+import android.content.SharedPreferences
 import android.location.Geocoder
 import android.location.Location
 import android.net.Uri
+import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
@@ -36,6 +38,10 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.GeoPoint
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
+import com.google.mlkit.common.model.DownloadConditions
+import com.google.mlkit.nl.translate.TranslateLanguage
+import com.google.mlkit.nl.translate.Translator
+import com.google.mlkit.nl.translate.TranslatorOptions
 import java.io.File
 import java.util.Locale
 import java.util.UUID
@@ -59,6 +65,8 @@ class ReportFragment : Fragment() {
     private lateinit var otherButton: Button
     private lateinit var helpButton: Button
     private lateinit var panicButton: Button
+
+
     private lateinit var locationPermissionLauncher: ActivityResultLauncher<String>
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var uri: Uri? = null
@@ -71,6 +79,7 @@ class ReportFragment : Fragment() {
     private lateinit var pickImage: ActivityResultLauncher<String>
     private var uploadedImage: Boolean = false;
 
+    private val REQUEST_CODE_TRANSLATION = 1001  // Request code for SettingsPage
     companion object {
         const val LOCATION_REQUEST_CODE = 1000
     }
@@ -213,12 +222,94 @@ class ReportFragment : Fragment() {
             builder.show()
         }
 
-
         reportButton.setOnClickListener {
             submitReport()
         }
 
+        // Load and apply the saved language when the fragment opens
+        val savedLanguage = loadLanguagePreference()
+        if (savedLanguage != null) {
+            applySavedLanguage(savedLanguage)
+        }
         return view
+    }
+
+    // Override onActivityResult to check if language update was made
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_CODE_TRANSLATION && resultCode == AppCompatActivity.RESULT_OK) {
+            // Reapply translation when coming back from SettingsPage
+            val savedLanguage = loadLanguagePreference()
+            if (savedLanguage != null) {
+                applySavedLanguage(savedLanguage)  // Reapply the language
+            }
+        }
+    }
+
+    // Method to load the saved language from SharedPreferences
+    private fun loadLanguagePreference(): String? {
+        val sharedPref: SharedPreferences = requireActivity().getSharedPreferences("AppSettings", AppCompatActivity.MODE_PRIVATE)
+        return sharedPref.getString("selectedLanguage", null)
+    }
+
+    // Apply the translation based on the saved language
+    private fun applySavedLanguage(languageCode: String) {
+        val options = TranslatorOptions.Builder()
+            .setSourceLanguage(TranslateLanguage.ENGLISH)
+            .setTargetLanguage(languageCode)
+            .build()
+
+        val translator = com.google.mlkit.nl.translate.Translation.getClient(options)
+        val conditions = DownloadConditions.Builder().requireWifi().build()
+
+        translator.downloadModelIfNeeded(conditions)
+            .addOnSuccessListener {
+                translateProfileFragmentTexts(translator)
+            }
+            .addOnFailureListener {
+                Toast.makeText(requireContext(), "Failed to apply saved language", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    // Translate the text of the buttons in ProfileFragment
+    private fun translateProfileFragmentTexts(translator: Translator) {
+        val textsToTranslate = listOf(
+            "Report A Wildfire", "Report Suspicious Activity",
+            "Report Lost Pet", "Report A Crime",
+            "Report Vandalism", "Report Excessive Noise","Other",
+            "Request Help","Enter Description","Enter the location",
+            "Current Location","Upload A Picture","Report",
+            "Report a Missing Person"
+        )
+
+        val translatedTexts = mutableListOf<String>()
+
+        for (text in textsToTranslate) {
+            translator.translate(text)
+                .addOnSuccessListener { translatedText ->
+                    translatedTexts.add(translatedText)
+                    if (translatedTexts.size == textsToTranslate.size) {
+                        // Apply translations to the respective buttons
+                        wildfireButton.text = translatedTexts[0]
+                        suspiciousButton.text = translatedTexts[1]
+                        petButton.text = translatedTexts[2]
+                        crimeButton.text = translatedTexts[3]
+                        vandalismButton.text = translatedTexts[4]
+                        noiseButton.text = translatedTexts[5]
+                        otherButton.text = translatedTexts[6]
+                        helpButton.text = translatedTexts[7]
+                        description.hint = translatedTexts[8]
+                        location.hint = translatedTexts[9]
+                        locationCheckBox.text = translatedTexts[10]
+                        pictureCheckBox.text = translatedTexts[11]
+                        reportButton.text = translatedTexts[12]
+                        missingPersonButton.text = translatedTexts[13]
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    Toast.makeText(requireContext(), "Translation failed: ${exception.message}", Toast.LENGTH_SHORT).show()
+                }
+        }
     }
 
     private fun checkCameraPermissionAndOpen() {
