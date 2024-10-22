@@ -2,7 +2,10 @@ package za.co.varsitycollege.st10215473.pank
 
 import android.app.Activity
 import android.content.Intent
+import android.os.Build
+import android.content.SharedPreferences
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.View
 import android.widget.Button
@@ -12,9 +15,11 @@ import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.biometric.BiometricManager
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -32,6 +37,7 @@ import com.google.mlkit.nl.translate.TranslateLanguage
 import com.google.mlkit.nl.translate.Translator
 import com.google.mlkit.nl.translate.TranslatorOptions
 import com.google.mlkit.nl.translate.Translation
+import kotlinx.coroutines.launch
 
 class LoginPage : AppCompatActivity() {
     //variable for going to dashboard page if user has a registered account
@@ -45,6 +51,7 @@ class LoginPage : AppCompatActivity() {
     private lateinit var firebaseRef: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient
+
     private lateinit var emailtextview: TextView
     private lateinit var login: TextView
     private lateinit var signuptextview: TextView
@@ -55,10 +62,27 @@ class LoginPage : AppCompatActivity() {
     private lateinit var accountTextview: TextView
 
 
+    private lateinit var sharedPreferences: SharedPreferences
+
+    //Fingerprint manager
+    private val promptManager by lazy {
+        BiometricPromptManager(this)
+    }
+    // Register activity result launcher for biometric enrollment
+    private val enrollLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        // Handle the result if needed (e.g., show a Toast if enrolled successfully)
+        Toast.makeText(this, "Biometric setup result: $result", Toast.LENGTH_SHORT).show()
+    }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_login_page)
+
+        sharedPreferences = getSharedPreferences("myPrefs", MODE_PRIVATE)
 
         firebaseRef = FirebaseFirestore.getInstance()
         auth = Firebase.auth
@@ -121,8 +145,6 @@ class LoginPage : AppCompatActivity() {
                 LoginUser(email, password)
             }
         })
-
-
     }
     // Method to load the saved language from SharedPreferences
     private fun loadLanguagePreference(): String? {
@@ -186,6 +208,20 @@ class LoginPage : AppCompatActivity() {
         authr.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
+                    val editor = sharedPreferences.edit()
+                    editor.putBoolean("isLoggedIn", true)
+                    editor.apply()
+
+
+                    // Set up biometric prompt handling
+                    setupBiometrics()
+
+                    // Show biometric prompt when the activity is opened
+                    promptManager.showBiometricPrompt(
+                        title = "Biometric Authentication",
+                        description = "Please authenticate to access PAN!K"
+                    )
+
                     // Sign in success, update UI with the signed-in user's information
                     Toast.makeText(baseContext, "Login Successful", Toast.LENGTH_LONG).show()
                     val intent = Intent(this, MainActivity::class.java)
@@ -205,6 +241,10 @@ class LoginPage : AppCompatActivity() {
     private fun signInWithGoogle() {
         googleSignInClient.signOut().addOnCompleteListener { task ->
             if (task.isSuccessful) {
+                val editor = sharedPreferences.edit()
+                editor.putBoolean("isLoggedIn", true)
+                editor.apply()
+
                 // After sign out is successful, proceed with the sign-in intent
                 val signInIntent = googleSignInClient.signInIntent
                 launcher.launch(signInIntent)
@@ -256,6 +296,16 @@ class LoginPage : AppCompatActivity() {
                     // Store user profile in Firestore
                     addUserToFirebase(userProfile)
 
+
+                    // Set up biometric prompt handling
+                    setupBiometrics()
+
+                    // Show biometric prompt when the activity is opened
+                    promptManager.showBiometricPrompt(
+                        title = "Biometric Authentication",
+                        description = "Please authenticate to access PAN!K"
+                    )
+
                     // Redirect to ProfileActivity
                     val intent = Intent(this, MainActivity::class.java)
                     startActivity(intent)
@@ -288,6 +338,45 @@ class LoginPage : AppCompatActivity() {
         }
     }
 
+    private fun setupBiometrics() {
+        lifecycleScope.launch {
+            promptManager.promptResults.collect { result ->
+                when (result) {
+                    is BiometricPromptManager.BiometricResult.AuthenticationNotSet -> {
+                        if (Build.VERSION.SDK_INT >= 30) {
+                            val enrollIntent = Intent(Settings.ACTION_BIOMETRIC_ENROLL).apply {
+                                putExtra(
+                                    Settings.EXTRA_BIOMETRIC_AUTHENTICATORS_ALLOWED,
+                                    BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL
+                                )
+                            }
+                            enrollLauncher.launch(enrollIntent)
+                        } else {
+                            Toast.makeText(this@LoginPage, "Biometrics not set up", Toast.LENGTH_SHORT).show()
+                            finish()  // Redirect back if biometrics are not set
+                        }
+                    }
+                    is BiometricPromptManager.BiometricResult.AuthenticationError -> {
+                        Toast.makeText(this@LoginPage, "Error: ${result.error}", Toast.LENGTH_SHORT).show()
+                        finish()  // Redirect back to the previous page on authentication error
+                    }
+                    BiometricPromptManager.BiometricResult.AuthenticationFailed -> {
+                        Toast.makeText(this@LoginPage, "Authentication Failed", Toast.LENGTH_SHORT).show()
+                        finish()  // Redirect back on failed authentication
+                    }
+                    BiometricPromptManager.BiometricResult.AuthenticationSuccess -> {
+                        Toast.makeText(this@LoginPage, "Authentication Successful", Toast.LENGTH_SHORT).show()
+                    }
+                    BiometricPromptManager.BiometricResult.FeatureUnavailable -> {
+                        Toast.makeText(this@LoginPage, "Biometric feature unavailable", Toast.LENGTH_SHORT).show()
+                    }
+                    BiometricPromptManager.BiometricResult.HardwareUnavailable -> {
+                        Toast.makeText(this@LoginPage, "Biometric hardware unavailable", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
+    }
 
 
 }
