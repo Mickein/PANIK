@@ -1,7 +1,0 @@
-<resources>
-    <string name="app_name">PAN!K</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="default_web_client_id">996438206878-n2737vm9bugjir4ogptv7g4p8junec3t.apps.googleusercontent.com</string>
-    <string name="icon_desc">Category icon</string>
-</resources>

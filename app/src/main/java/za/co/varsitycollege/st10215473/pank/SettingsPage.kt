@@ -69,6 +69,7 @@ class SettingsPage : AppCompatActivity() {
             finish()  // This will close the SettingsActivity and return to MainActivity
         }
 
+
         // Set up biometric prompt handling
             setupBiometrics()
 
@@ -119,6 +120,7 @@ class SettingsPage : AppCompatActivity() {
                 }
             }
         }
+
     }
 
     // Method to load the saved language from SharedPreferences

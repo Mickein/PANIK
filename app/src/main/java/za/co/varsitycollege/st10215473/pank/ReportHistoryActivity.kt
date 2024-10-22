@@ -15,11 +15,20 @@ import za.co.varsitycollege.st10215473.pank.adapter.ReportAdapter
 import za.co.varsitycollege.st10215473.pank.data.Reports
 import za.co.varsitycollege.st10215473.pank.decorator.SpacesItemDecoration
 import android.util.Log
+import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
+
+import com.google.mlkit.common.model.DownloadConditions
+import com.google.mlkit.nl.translate.TranslateLanguage
+import com.google.mlkit.nl.translate.Translator
+import com.google.mlkit.nl.translate.TranslatorOptions
+
 import com.google.firebase.firestore.GeoPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -30,8 +39,16 @@ class ReportHistoryActivity : AppCompatActivity() {
     private lateinit var rvReportHistory: RecyclerView
     private lateinit var firebaseRef: FirebaseFirestore
     private lateinit var reportAdapter: ReportAdapter
+
+    private val reportList = ArrayList<Reports>()  // List to store reports
+    private lateinit var titleHistory: TextView
+    private lateinit var Description: TextView
+    private lateinit var LocationHistory: TextView
+
+
     private val reportList = ArrayList<Reports>()
     private lateinit var reportDao: ReportDao
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
