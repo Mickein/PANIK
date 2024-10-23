@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "996438206878",
+    "project_id": "pan-k-f6477",
+    "storage_bucket": "pan-k-f6477.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:996438206878:android:6317fadbd9d604e0a48e8f",
+        "android_client_info": {
+          "package_name": "za.co.varsitycollege.st10215473.pank"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "996438206878-n2737vm9bugjir4ogptv7g4p8junec3t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCui8x6yeCEiEUmqGOhXlLynnwel_9t45U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "996438206878-n2737vm9bugjir4ogptv7g4p8junec3t.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
