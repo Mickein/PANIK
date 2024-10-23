@@ -27,8 +27,15 @@ import android.content.DialogInterface
 import android.content.SharedPreferences
 import android.location.Geocoder
 import android.location.Location
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkRequest
 import android.net.Uri
+
 import androidx.appcompat.app.AppCompatActivity
+
+import android.util.Log
+
 import androidx.cardview.widget.CardView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
@@ -38,10 +45,19 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.GeoPoint
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
+
 import com.google.mlkit.common.model.DownloadConditions
 import com.google.mlkit.nl.translate.TranslateLanguage
 import com.google.mlkit.nl.translate.Translator
 import com.google.mlkit.nl.translate.TranslatorOptions
+
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
+import za.co.varsitycollege.st10215473.pank.data.ReportEntity
+
 import java.io.File
 import java.util.Locale
 import java.util.UUID
@@ -78,6 +94,7 @@ class ReportFragment : Fragment() {
     private var currentLng: Double? = null
     private lateinit var pickImage: ActivityResultLauncher<String>
     private var uploadedImage: Boolean = false;
+    private lateinit var reportDao: ReportDao
 
     private val REQUEST_CODE_TRANSLATION = 1001  // Request code for SettingsPage
     companion object {
@@ -86,6 +103,9 @@ class ReportFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val db = AppDatabase.getDatabase(requireContext())
+        reportDao = db.reportDao()
 
         // Initialize Firebase and Location client
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
@@ -472,28 +492,83 @@ class ReportFragment : Fragment() {
                 "timestamp" to System.currentTimeMillis(),
                 "imageUrl" to ""  // Initialize image URL as null
             )
+            if(isOnline()){
+                if (uploadedImage == true) {
+                    // If the user added an image, upload it and store its URL
+                    uploadImageAndStoreData(uri!!, reportData)
+                } else {
+                    // If no image, directly store the report data with imageUrl set to null
+                    firebaseRef.collection("reports").add(reportData)
+                        .addOnSuccessListener {
+                            Toast.makeText(context, "Report successfully submitted", Toast.LENGTH_SHORT)
+                                .show()
+                        }
+                        .addOnFailureListener { e ->
+                            Toast.makeText(
+                                context,
+                                "Failed to submit report: ${e.message}",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                }
+            }
+            else {
+                // Device is offline, save the report locally in Room
+                val reportEntity = ReportEntity(
+                    title = title,
+                    description = description,
+                    location = GeoPoint(lat, lng),
+                    userId = user.uid,
+                    timestamp = System.currentTimeMillis(),
+                    imageUrl = null // Set to null initially if we don't have the image path yet
+                )
 
-            if (uploadedImage == true) {
-                // If the user added an image, upload it and store its URL
-                uploadImageAndStoreData(uri!!, reportData)
-            } else {
-                // If no image, directly store the report data with imageUrl set to null
-                firebaseRef.collection("reports").add(reportData)
-                    .addOnSuccessListener {
-                        Toast.makeText(context, "Report successfully submitted", Toast.LENGTH_SHORT)
-                            .show()
-                    }
-                    .addOnFailureListener { e ->
-                        Toast.makeText(
-                            context,
-                            "Failed to submit report: ${e.message}",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
+                // If the user has uploaded an image, save it locally
+                if (uploadedImage == true) {
+                    // Create a file path for the image
+                    val imageFile = File(requireContext().filesDir, "images/${UUID.randomUUID()}.jpg")
+
+                    // Save the image to the file
+                    saveImageToLocalFile(uri!!, imageFile)
+
+                    // Update the reportEntity with the local image path
+                    reportEntity.imageUrl = imageFile.absolutePath  // Save the local image path
+                }
+
+                saveReportToRoom(reportEntity)
             }
         }
     }
 
+    private fun saveImageToLocalFile(imageUri: Uri, imageFile: File) {
+        try {
+            requireContext().contentResolver.openInputStream(imageUri).use { inputStream ->
+                imageFile.outputStream().use { outputStream ->
+                    inputStream?.copyTo(outputStream)
+                }
+            }
+            Toast.makeText(context, "Image saved locally", Toast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            Log.e("ImageSaveError", "Failed to save image: ${e.message}")
+            Toast.makeText(context, "Failed to save image: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun isOnline(): Boolean {
+        val connectivityManager = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val activeNetwork = connectivityManager.activeNetworkInfo
+        return activeNetwork != null && activeNetwork.isConnected
+    }
+
+    private fun saveReportToRoom(reportEntity: ReportEntity) {
+        // Use a coroutine or viewModelScope to save to Room
+        CoroutineScope(Dispatchers.IO).launch {
+            reportDao.insertReport(reportEntity)
+            withContext(Dispatchers.Main) {
+                Toast.makeText(context, "Report saved offline", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
 
     private fun uploadImageAndStoreData(imageUri: Uri, reportData: HashMap<String, Any>) {
         val imageRef = storageRef.child("images/${UUID.randomUUID()}.jpg")
@@ -525,6 +600,71 @@ class ReportFragment : Fragment() {
             Toast.makeText(context, "Failed to upload image", Toast.LENGTH_SHORT).show()
         }
     }
+
+    override fun onResume() {
+        super.onResume()
+        // Register a network callback to listen for connectivity changes
+        registerNetworkCallback()
+    }
+
+    private fun registerNetworkCallback() {
+        val connectivityManager = context?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val builder = NetworkRequest.Builder()
+        connectivityManager.registerNetworkCallback(builder.build(), object : ConnectivityManager.NetworkCallback() {
+            override fun onAvailable(network: Network) {
+                super.onAvailable(network)
+                // Sync reports from Room to Firestore
+                syncReportsWithFirestore()
+            }
+        })
+    }
+
+    private fun syncReportsWithFirestore() {
+        val userId = FirebaseAuth.getInstance().currentUser
+        CoroutineScope(Dispatchers.IO).launch {
+            val offlineReports = reportDao.getReportsByUserId(userId?.uid) // Fetch all reports from Room
+            for (report in offlineReports) {
+                val reportData = hashMapOf<String, Any>(
+                    "title" to report.title,
+                    "description" to report.description,
+                    "location" to GeoPoint(report.location.latitude, report.location.longitude),
+                    "userId" to report.userId,
+                    "timestamp" to report.timestamp,
+                    "imageUrl" to (report.imageUrl ?: "")  // Provide a default if null
+                )
+
+                try {
+                    // If the image URL is not null, upload the image first
+                    if (report.imageUrl != null) {
+                        val imageUri = Uri.fromFile(File(report.imageUrl)) // Use the appropriate way to get the Uri
+                        val imageUrl = uploadImageAndGetUrl(imageUri) // You need to implement this method
+                        reportData["imageUrl"] = imageUrl // Update the report data with the new image URL
+                    }
+
+                    // Try to add the report to Firestore
+                    firebaseRef.collection("reports").add(reportData).await() // Use await to wait for completion
+                    // If successful, delete the report from Room
+                    reportDao.deleteReport(report.id)
+                } catch (e: Exception) {
+                    // Handle any errors (e.g., log them)
+                    Log.e("SyncError", "Failed to submit report: ${e.message}")
+                }
+            }
+            // Notify user after processing all reports
+            withContext(Dispatchers.Main) {
+                Toast.makeText(context, "Sync complete", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    // Function to upload the image and return the URL
+    private suspend fun uploadImageAndGetUrl(imageUri: Uri): String {
+        val imageRef =
+            storageRef.child("images/${UUID.randomUUID()}.jpg") // Create a unique file name
+        imageRef.putFile(imageUri).await() // Wait for the upload to complete
+        return imageRef.downloadUrl.await().toString() // Get and return the download URL
+    }
+
 }
 
 
