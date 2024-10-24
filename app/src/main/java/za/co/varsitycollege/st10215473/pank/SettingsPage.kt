@@ -69,14 +69,14 @@ class SettingsPage : AppCompatActivity() {
             finish()  // This will close the SettingsActivity and return to MainActivity
         }
 
-                // Set up biometric prompt handling
+           /*     // Set up biometric prompt handling
                     setupBiometrics()
 
                 // Show biometric prompt when the activity is opened
                 promptManager.showBiometricPrompt(
                     title = "Biometric Authentication",
                     description = "Please authenticate to access Settings Features"
-                )
+                )*/
 
     }
 
