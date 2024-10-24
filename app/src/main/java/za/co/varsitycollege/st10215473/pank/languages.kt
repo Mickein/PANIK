@@ -14,6 +14,9 @@ import java.util.Locale
 class languages : AppCompatActivity() {
     lateinit var btnAfrikaans: Button
     lateinit var btnEnglish: Button
+    lateinit var btnChinese: Button
+    lateinit var btnGerman: Button
+    lateinit var btnKorean: Button
     private lateinit var translator: Translator
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,6 +32,18 @@ class languages : AppCompatActivity() {
 
         btnEnglish.setOnClickListener {
             setupTranslator(TranslateLanguage.ENGLISH)
+        }
+
+        btnChinese.setOnClickListener {
+            setupTranslator(TranslateLanguage.CHINESE)
+        }
+
+        btnGerman.setOnClickListener {
+            setupTranslator(TranslateLanguage.GERMAN)
+        }
+
+        btnKorean.setOnClickListener {
+            setupTranslator(TranslateLanguage.KOREAN)
         }
     }
 
