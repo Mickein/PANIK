@@ -46,7 +46,7 @@ class ReportHistoryActivity : AppCompatActivity() {
     private lateinit var LocationHistory: TextView
 
 
-    private val reportList = ArrayList<Reports>()
+
     private lateinit var reportDao: ReportDao
 
 
