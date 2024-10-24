@@ -25,6 +25,9 @@ class languages : AppCompatActivity() {
 
         btnAfrikaans = findViewById(R.id.btnAfrikaans)
         btnEnglish = findViewById(R.id.btnEnglish)
+        btnChinese = findViewById(R.id.btnChinese)
+        btnGerman = findViewById(R.id.btnGerman)
+        btnKorean = findViewById(R.id.btnKorean)
 
         btnAfrikaans.setOnClickListener {
             setupTranslator(TranslateLanguage.AFRIKAANS)
