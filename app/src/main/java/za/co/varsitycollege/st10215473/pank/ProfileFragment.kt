@@ -1,5 +1,6 @@
 package za.co.varsitycollege.st10215473.pank
 
+import android.content.Context.MODE_PRIVATE
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -31,6 +32,7 @@ class ProfileFragment : Fragment() {
     private lateinit var openReportBugsButton: Button
     private lateinit var openLogoutButton: Button
     private lateinit var openProfileActivity: Button
+    private lateinit var sharedPreferences: SharedPreferences
 
     private val REQUEST_CODE_TRANSLATION = 1001  // Request code for SettingsPage
 
@@ -97,6 +99,8 @@ class ProfileFragment : Fragment() {
         openLogoutButton = view.findViewById(R.id.btnlogout)
         openProfileActivity = view.findViewById(R.id.btnGoToProfilePage)
 
+        sharedPreferences = requireActivity().getSharedPreferences("myPrefs", MODE_PRIVATE)
+
         // Load and apply the saved language when the fragment opens
         val savedLanguage = loadLanguagePreference()
         if (savedLanguage != null) {
@@ -107,6 +111,14 @@ class ProfileFragment : Fragment() {
         openSettingsButton.setOnClickListener {
             val intent = Intent(context, SettingsPage::class.java)
             startActivityForResult(intent, REQUEST_CODE_TRANSLATION)  // Launch SettingsPage for result
+        }
+        openLogoutButton.setOnClickListener {
+            val intent = Intent(context, LoginPage::class.java)
+            startActivity(intent)
+
+            val editor = sharedPreferences.edit()
+            editor.putBoolean("isLoggedIn", false)
+            editor.apply()
         }
 
         // Other button functionalities can be added here...
