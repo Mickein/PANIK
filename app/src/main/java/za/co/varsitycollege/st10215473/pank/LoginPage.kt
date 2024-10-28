@@ -55,7 +55,7 @@ class LoginPage : AppCompatActivity() {
     private lateinit var passwordEdit: EditText
     private lateinit var loginemail: EditText
     //variable for going to register page if user doesnt have an account
-    private lateinit var goToReg: TextView
+    private lateinit var goToLog: TextView
     private lateinit var firebaseRef: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient
@@ -100,7 +100,12 @@ class LoginPage : AppCompatActivity() {
             startActivity(intent)
         }
         //Set onClickListener for Google Sign In
-        googleSignInButton.setOnClickListener{ signInWithGoogle() }
+        googleSignInButton.setOnClickListener{
+            signInWithGoogle()
+            val intent = Intent()
+            setResult(RESULT_OK, intent)
+            finish()
+        }
 
 
         //Firebase Authentication
@@ -297,6 +302,7 @@ class LoginPage : AppCompatActivity() {
                     BiometricPromptManager.BiometricResult.HardwareUnavailable -> {
                         Toast.makeText(this@LoginPage, "Biometric hardware unavailable", Toast.LENGTH_SHORT).show()
                     }
+
                 }
             }
         }
