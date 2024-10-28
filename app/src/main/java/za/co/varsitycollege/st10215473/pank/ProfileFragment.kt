@@ -92,6 +92,8 @@ class ProfileFragment : Fragment() {
         }
 
 
+        sharedPreferences = requireActivity().getSharedPreferences("myPrefs", MODE_PRIVATE)
+
         // Find the buttons in the layout
         openSettingsButton = view.findViewById(R.id.btnSettings)
         openAboutDevsButton = view.findViewById(R.id.btnAboutDevs)
@@ -112,6 +114,15 @@ class ProfileFragment : Fragment() {
             val intent = Intent(context, SettingsPage::class.java)
             startActivityForResult(intent, REQUEST_CODE_TRANSLATION)  // Launch SettingsPage for result
         }
+        openLogoutButton.setOnClickListener {
+            val intent = Intent(context, LoginPage::class.java)
+            startActivity(intent)
+
+            val editor = sharedPreferences.edit()
+            editor.putBoolean("isLoggedIn", false)
+            editor.apply()
+        }
+
         openLogoutButton.setOnClickListener {
             val intent = Intent(context, LoginPage::class.java)
             startActivity(intent)
