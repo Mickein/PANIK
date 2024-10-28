@@ -45,7 +45,7 @@
         app:layout_constraintVertical_bias="0.051" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/tvDistance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Select a Distance"
@@ -58,7 +58,7 @@
         app:layout_constraintVertical_bias="0.041" />
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/tvCategory"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Select a Category"

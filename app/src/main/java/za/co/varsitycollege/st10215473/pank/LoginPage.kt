@@ -42,14 +42,6 @@ import kotlinx.coroutines.launch
 class LoginPage : AppCompatActivity() {
     //variable for going to dashboard page if user has a registered account
     lateinit var openDash: TextView
-
-    lateinit var btnLanguageTranslate:Button
-    lateinit  var txtLogin:TextView
-
-    var originalText:String=""
-    private lateinit var translator: Translator
-
-    private lateinit var textViewsToTranslate: List<TextView>
     //variables for firebase authentication
     private lateinit var authr: FirebaseAuth
     private lateinit var passwordEdit: EditText
@@ -59,6 +51,17 @@ class LoginPage : AppCompatActivity() {
     private lateinit var firebaseRef: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient
+
+    private lateinit var emailtextview: TextView
+    private lateinit var login: TextView
+    private lateinit var signuptextview: TextView
+    private lateinit var passwordtextview: TextView
+    private lateinit var loginbutton: Button
+    private lateinit var registerButton: Button
+    private lateinit var ortextview: TextView
+    private lateinit var accountTextview: TextView
+
+
     private lateinit var sharedPreferences: SharedPreferences
 
     //Fingerprint manager
@@ -72,6 +75,7 @@ class LoginPage : AppCompatActivity() {
         // Handle the result if needed (e.g., show a Toast if enrolled successfully)
         Toast.makeText(this, "Biometric setup result: $result", Toast.LENGTH_SHORT).show()
     }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -114,6 +118,21 @@ class LoginPage : AppCompatActivity() {
         openDash = findViewById(R.id.btnLogin)
         authr = com.google.firebase.Firebase.auth
 
+        signuptextview = findViewById(R.id.tvSignin)
+        login = findViewById(R.id.txtLogin)
+        emailtextview = findViewById(R.id.tvEmail)
+        passwordtextview = findViewById(R.id.tvPassword)
+        loginbutton = findViewById(R.id.btnLogin)
+        ortextview = findViewById(R.id.tvOr)
+        registerButton = findViewById(R.id.btnSignUp)
+        accountTextview = findViewById(R.id.tvAccount)
+
+        // Load and apply the saved language when the activity opens
+        val savedLanguage = loadLanguagePreference()
+        if (savedLanguage != null) {
+            applySavedLanguage(savedLanguage)
+        }
+
         openDash.setOnClickListener(View.OnClickListener {
             val password = passwordEdit.text.toString()
             val email = loginemail.text.toString()
@@ -131,6 +150,63 @@ class LoginPage : AppCompatActivity() {
                 LoginUser(email, password)
             }
         })
+    }
+    // Method to load the saved language from SharedPreferences
+    private fun loadLanguagePreference(): String? {
+        val sharedPref = getSharedPreferences("AppSettings", MODE_PRIVATE)
+        return sharedPref.getString("selectedLanguage", null)
+    }
+    // Apply the translation based on the saved language
+    private fun applySavedLanguage(languageCode: String) {
+        val options = TranslatorOptions.Builder()
+            .setSourceLanguage(TranslateLanguage.ENGLISH)
+            .setTargetLanguage(languageCode)
+            .build()
+
+        val translator = com.google.mlkit.nl.translate.Translation.getClient(options)
+        val conditions = DownloadConditions.Builder().requireWifi().build()
+
+        translator.downloadModelIfNeeded(conditions)
+            .addOnSuccessListener {
+                translateSettingsActivityText(translator)
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, "Failed to apply saved language", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    private fun translateSettingsActivityText(translator: Translator) {
+        val textsToTranslate = listOf(
+            "Sign-in to continue","Log-in",
+            "Email","Password",
+            "Login","Or",
+            "Register","Don't Have an account"
+        )
+
+        val translatedTexts = mutableListOf<String>()
+
+        for (text in textsToTranslate) {
+            translator.translate(text)
+                .addOnSuccessListener { translatedText ->
+                    translatedTexts.add(translatedText)
+                    if (translatedTexts.size == textsToTranslate.size) {
+                        signuptextview.text = translatedTexts[0]
+                        login.text = translatedTexts[1]
+                        emailtextview.text = translatedTexts[2]
+                        passwordtextview.text = translatedTexts[3]
+                        loginbutton.text = translatedTexts[4]
+                        ortextview.text = translatedTexts[5]
+                        registerButton.text = translatedTexts[6]
+                        accountTextview.text = translatedTexts[7]
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    Toast.makeText(this, "Translation failed: ${exception.message}", Toast.LENGTH_SHORT).show()
+                }
+        }
+    }
+    companion object {
+        const val REQUEST_CODE_TRANSLATION = 1001
     }
 
     private fun LoginUser(email: String, password: String) {
