@@ -111,6 +111,7 @@ class LoginPage : AppCompatActivity() {
             finish()
         }
 
+
         //Firebase Authentication
         passwordEdit = findViewById(R.id.edtPasswordLogin)
         loginemail = findViewById(R.id.edtEmailLogin)
@@ -382,5 +383,6 @@ class LoginPage : AppCompatActivity() {
             }
         }
     }
+
 
 }

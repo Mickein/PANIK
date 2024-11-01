@@ -69,17 +69,17 @@
 
     <TextView
         android:id="@+id/txtLogin"
-        android:layout_width="348dp"
-        android:layout_height="56dp"
-        android:layout_marginStart="28dp"
-        android:layout_marginTop="260dp"
+        android:layout_width="347dp"
+        android:layout_height="53dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="4dp"
         android:text="Log-in"
         android:textAlignment="center"
         android:textColor="#000000"
         android:textSize="40sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/tvSignin" />
 
     <Button
         android:id="@+id/btnGoogleSignIn"

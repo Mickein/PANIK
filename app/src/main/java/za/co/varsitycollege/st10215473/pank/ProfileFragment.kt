@@ -123,14 +123,6 @@ class ProfileFragment : Fragment() {
             editor.apply()
         }
 
-        openLogoutButton.setOnClickListener {
-            val intent = Intent(context, LoginPage::class.java)
-            startActivity(intent)
-
-            val editor = sharedPreferences.edit()
-            editor.putBoolean("isLoggedIn", false)
-            editor.apply()
-        }
 
         // Other button functionalities can be added here...
         openAboutDevsButton.setOnClickListener {
@@ -141,9 +133,7 @@ class ProfileFragment : Fragment() {
             Toast.makeText(requireContext(), "Feature Coming Soon", Toast.LENGTH_SHORT).show()
         }
 
-        openLogoutButton.setOnClickListener {
-            Toast.makeText(requireContext(), "Feature Coming Soon", Toast.LENGTH_SHORT).show()
-        }
+
         openProfileActivity.setOnClickListener { val intent = Intent(requireContext(), ProfileActivity::class.java)
             startActivity(intent)
         }

@@ -4,6 +4,8 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.Handler
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -13,6 +15,9 @@ import com.google.firebase.auth.FirebaseAuth
 class SplashScreen : AppCompatActivity() {
 
     private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var splashGreeting: TextView
+    private lateinit var splashBG: ImageView
+    private lateinit var splashLogo: ImageView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -22,6 +27,15 @@ class SplashScreen : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+        splashLogo = findViewById(R.id.imgSplashLogo)
+        splashBG = findViewById(R.id.imgSplashBG)
+        splashGreeting = findViewById(R.id.tvWelcome)
+
+        splashLogo.animate().translationY(4000F).setDuration(1000).setStartDelay(2000)
+        splashGreeting.animate().translationY(4000F).setDuration(1000).setStartDelay(2000)
+        splashBG.animate().translationY(-4000F).setDuration(1000).setStartDelay(2000)
+
 
         // Initialize SharedPreferences
         sharedPreferences = getSharedPreferences("myPrefs", MODE_PRIVATE)
