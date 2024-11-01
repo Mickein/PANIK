@@ -2,6 +2,7 @@ package za.co.varsitycollege.st10215473.pank
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
@@ -16,6 +17,8 @@ import com.google.mlkit.common.model.DownloadConditions
 import com.google.mlkit.nl.translate.TranslateLanguage
 import com.google.mlkit.nl.translate.Translator
 import com.google.mlkit.nl.translate.TranslatorOptions
+import com.google.firebase.messaging.FirebaseMessaging
+import org.json.JSONObject
 import za.co.varsitycollege.st10215473.pank.data.Profile
 
 class RegisterPage : AppCompatActivity() {
@@ -174,7 +177,7 @@ class RegisterPage : AppCompatActivity() {
                     val user = authReg.currentUser
                     val uid = user?.uid
                     if (user != null) {
-                        val userProfile = Profile(uid, name, surname, number, email, "")
+                        val userProfile = Profile(uid, name, surname, number, email, "", "")
                         addUserToFirebase(userProfile)
                     }
                 } else {
@@ -184,7 +187,6 @@ class RegisterPage : AppCompatActivity() {
             }
     }
 
-
     private fun addUserToFirebase(userProfile: Profile) {
         val uid = userProfile.id
         uid?.let {
@@ -192,16 +194,36 @@ class RegisterPage : AppCompatActivity() {
                 .document(it) // Use uid as the document ID
                 .set(userProfile)
                 .addOnSuccessListener {
-                    // On success, navigate to Login page
-                    val intent = Intent(this@RegisterPage, LoginPage::class.java)
-                    startActivity(intent)
-                    finish()
+                    getFcmTokenAndSaveToFirestore(uid)
                 }
                 .addOnFailureListener {
                     Toast.makeText(baseContext, "${it.message}", Toast.LENGTH_SHORT).show()
                 }
         } ?: run {
             Toast.makeText(baseContext, "User ID is null. Cannot add profile to database.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun getFcmTokenAndSaveToFirestore(uid: String) {
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Log.w("FCM", "Fetching FCM registration token failed", task.exception)
+                return@addOnCompleteListener
+            }
+            // Get new FCM registration token
+            val token = task.result
+
+            // Save the token in Firestore
+            firebaseRef.collection("Profile").document(uid).update("fcmToken", token)
+                .addOnSuccessListener {
+                    // Token successfully saved
+                    val intent = Intent(this@RegisterPage, LoginPage::class.java)
+                    startActivity(intent)
+                    finish()
+                }
+                .addOnFailureListener { e ->
+                    Log.e("FCM", "Error saving token to Firestore", e)
+                }
         }
     }
 

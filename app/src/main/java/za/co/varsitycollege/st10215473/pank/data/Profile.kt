@@ -7,6 +7,7 @@ class Profile (
     val number: String? = null,
     val email: String? = null,
     val profilePic: String? = null,
+    val fcmToken: String? = null
     ){
-    constructor():this("", "", "", "", "", "")
+    constructor():this("", "", "", "", "", "", "")
 }

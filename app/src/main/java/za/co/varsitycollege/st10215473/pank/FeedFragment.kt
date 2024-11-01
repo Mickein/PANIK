@@ -1,59 +1,62 @@
 package za.co.varsitycollege.st10215473.pank
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.firestore.FirebaseFirestore
+import za.co.varsitycollege.st10215473.pank.adapter.ReportAdapter
+import za.co.varsitycollege.st10215473.pank.data.Reports
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [FeedFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class FeedFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
+
     }
+
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var reportAdapter: ReportAdapter
+    private val reportList = ArrayList<Reports>()  // List to store all reports
+    private val firebaseRef = FirebaseFirestore.getInstance()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_feed, container, false)
+        val view = inflater.inflate(R.layout.fragment_feed, container, false)
+
+        // Initialize RecyclerView and Adapter
+        recyclerView = view.findViewById(R.id.FeedRecyclerView)
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        reportAdapter = ReportAdapter(reportList, requireContext())
+        recyclerView.adapter = reportAdapter
+
+        // Fetch all reports from Firestore
+        fetchAllReports()
+
+        return view
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment FeedFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            FeedFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    private fun fetchAllReports() {
+        firebaseRef.collection("reports").get()
+            .addOnSuccessListener { querySnapshot ->
+                reportList.clear()
+                for (document in querySnapshot.documents) {
+                    val report = document.toObject(Reports::class.java)
+                    report?.let { reportList.add(it) }
                 }
+                reportAdapter.notifyDataSetChanged() // Update adapter to refresh RecyclerView
+            }
+            .addOnFailureListener { exception ->
+                Log.e("FeedFragment", "Error fetching reports: ${exception.message}")
             }
     }
+
 }

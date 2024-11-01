@@ -20,6 +20,7 @@ firebaseDatabaseKtx = "21.0.0"
 picasso = "2.8"
 room = "2.6.1"
 firebase = "20.1.0"
+firebaseMessaging = "24.0.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -53,6 +54,7 @@ translate = "com.google.mlkit:translate:17.0.3"
 livedata ="androidx.lifecycle:lifecycle-livedata-ktx:2.6.2"
 viewModel ="androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2"
 biometrics = "androidx.biometric:biometric:1.1.0"
+firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging", version.ref = "firebaseMessaging" }
 
 
 [plugins]

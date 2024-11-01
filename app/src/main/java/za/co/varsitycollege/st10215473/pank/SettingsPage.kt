@@ -78,6 +78,11 @@ class SettingsPage : AppCompatActivity() {
                     description = "Please authenticate to access Settings Features"
                 )*/
 
+        btnReportHistory.setOnClickListener {
+            val intent = Intent(this, ReportHistoryActivity::class.java)
+            startActivity(intent)
+        }
+
     }
 
     // Method to handle biometric authentication and potential enrollment
