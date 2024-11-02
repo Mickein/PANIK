@@ -282,24 +282,23 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
+    val originalCategoryItems = arrayOf(
+        CategoryItem("All Reports", R.drawable.logo),
+        CategoryItem("Wildfire", R.drawable.fire_emoji),
+        CategoryItem("Suspicious Activity", R.drawable.suspicious),
+        CategoryItem("Lost Pet", R.drawable.pawprint),
+        CategoryItem("Crime", R.drawable.crime),
+        CategoryItem("Vandalism", R.drawable.vandalism),
+        CategoryItem("Excessive Noise", R.drawable.noisy),
+        CategoryItem("Missing Person", R.drawable.missing),
+        CategoryItem("Other", R.drawable.menu)
+    )
+
     private fun updateDropdowns(originalRadiusOptions: Array<String>, translatedRadiusOptions: Array<String>, translatedCategoryOptions: Array<String>) {
         // Update radius dropdown
         val radiusAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, translatedRadiusOptions)
         radiusAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         radiusDropdown.adapter = radiusAdapter
-
-        // Create a list of original category items
-        val originalCategoryItems = arrayOf(
-            CategoryItem("All Reports", R.drawable.logo),
-            CategoryItem("Wildfire", R.drawable.fire_emoji),
-            CategoryItem("Suspicious Activity", R.drawable.suspicious),
-            CategoryItem("Lost Pet", R.drawable.pawprint),
-            CategoryItem("Crime", R.drawable.crime),
-            CategoryItem("Vandalism", R.drawable.vandalism),
-            CategoryItem("Excessive Noise", R.drawable.noisy),
-            CategoryItem("Missing Person", R.drawable.missing),
-            CategoryItem("Other", R.drawable.menu)
-        )
 
         // Update category dropdown with translated options while retaining the original icons
         val categoryAdapter = object : ArrayAdapter<CategoryItem>(requireContext(), R.layout.dropdown_item, originalCategoryItems.mapIndexed { index, item ->
@@ -347,7 +346,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         // Get the selected category index from the dropdown
         val selectedCategoryIndex = categoryDropdown.selectedItemPosition
-         val selectedCategory = categoryDropdown.getItemAtPosition(selectedCategoryIndex) as CategoryItem
+         val selectedCategory = categoryDropdown.getItemAtPosition(selectedCategoryIndex)
 
         // Check permissions and update the map
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -361,7 +360,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                             .title("Current Location")
                             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
                     )
-                    getReports(it, selectedRadius, selectedCategory)
+                    getReports(it, selectedRadius, selectedCategoryIndex)
                 }
             }
         }
@@ -421,16 +420,17 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun displayNearbyReports(currentLocation: Location) {
-        val selectedRadius = when (radiusDropdown.selectedItem.toString()) {
-            "Nearby" -> 10.0
-            "Suburb" -> 50.0
-            "Province" -> 1000.0
-            "Country" -> 50000.0
-            else -> 10.0 // Default to 10km
-        }
-        val selectedCategory = categoryDropdown.selectedItem as CategoryItem
+        val radiusOptions = arrayOf(10.0, 50.0, 1000.0, 50000.0) // In kilometers
 
-        getReports(currentLocation, selectedRadius, selectedCategory) // Fetch reports based on filters
+        val selectedRadius = if (radiusDropdown.selectedItemPosition in radiusOptions.indices) {
+            radiusOptions[radiusDropdown.selectedItemPosition]
+        } else {
+            10.0
+        }
+
+        val selectedCategoryIndex = categoryDropdown.selectedItemPosition
+
+        getReports(currentLocation, selectedRadius, selectedCategoryIndex)
     }
 
     private fun showDialogBox() {
@@ -466,7 +466,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         map.onSaveInstanceState(outState)
     }
 
-    private fun getReports(currentLocation: Location, selectedRadius: Double, selectedCategory: CategoryItem) {
+    private fun getReports(currentLocation: Location, selectedRadius: Double, selectedCategoryIndex: Int) {
         val db = FirebaseFirestore.getInstance()
 
         db.collection("reports").get()
@@ -488,8 +488,17 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                         val distanceInMeters = currentLocation.distanceTo(reportLocation)
                         val distanceInKm = distanceInMeters / 1000
 
-                        // Check if the report is within the selected radius and matches the category
-                        if (distanceInKm <= selectedRadius && (title.contains(selectedCategory.name, ignoreCase = true) || selectedCategory.name == "All Reports")) {
+                        val categoryNames = originalCategoryItems.map { it.name }
+
+                        val selectedCategoryName = if (selectedCategoryIndex > 0 && selectedCategoryIndex < categoryNames.size) {
+                            categoryNames[selectedCategoryIndex]
+                        } else {
+                            "Report a Wildfire"
+                        }
+
+                        if (distanceInKm <= selectedRadius &&
+                            (selectedCategoryIndex == 0 || title.contains(selectedCategoryName))) {
+
                             val reportLatLng = LatLng(latitude, longitude)
 
                             val icon = when (title) {

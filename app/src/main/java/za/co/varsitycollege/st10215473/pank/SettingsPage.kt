@@ -69,6 +69,11 @@ class SettingsPage : AppCompatActivity() {
             finish()  // This will close the SettingsActivity and return to MainActivity
         }
 
+        btnReportHistory.setOnClickListener {
+            val intent = Intent(this, ReportHistoryActivity::class.java)
+            startActivity(intent)
+        }
+
            /*     // Set up biometric prompt handling
                     setupBiometrics()
 

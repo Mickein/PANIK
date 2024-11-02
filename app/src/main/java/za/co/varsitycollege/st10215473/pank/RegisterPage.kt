@@ -1,6 +1,8 @@
 package za.co.varsitycollege.st10215473.pank
 
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -8,7 +10,12 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import com.android.volley.AuthFailureError
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
@@ -20,6 +27,13 @@ import com.google.mlkit.nl.translate.TranslatorOptions
 import com.google.firebase.messaging.FirebaseMessaging
 import org.json.JSONObject
 import za.co.varsitycollege.st10215473.pank.data.Profile
+import android.Manifest
+import com.google.auth.oauth2.GoogleCredentials
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.FileInputStream
 
 class RegisterPage : AppCompatActivity() {
     //variable for going back to Login page if user has an existing account
@@ -48,6 +62,8 @@ class RegisterPage : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_register_page)
+
+        askNotificationPermission()
         openLoginPage()
 
         firstName = findViewById(R.id.edtNameRegister)
@@ -216,15 +232,121 @@ class RegisterPage : AppCompatActivity() {
             // Save the token in Firestore
             firebaseRef.collection("Profile").document(uid).update("fcmToken", token)
                 .addOnSuccessListener {
-                    // Token successfully saved
-                    val intent = Intent(this@RegisterPage, LoginPage::class.java)
-                    startActivity(intent)
-                    finish()
+                    sendWelcomeNotification(token) // Trigger the notification directly from the app
                 }
                 .addOnFailureListener { e ->
                     Log.e("FCM", "Error saving token to Firestore", e)
                 }
         }
     }
+
+    private fun sendWelcomeNotification(fcmToken: String) {
+        val url = "https://fcm.googleapis.com/v1/projects/pan-k-f6477/messages:send"
+
+        val notificationData = JSONObject()
+        val notificationDetails = JSONObject()
+
+        // Create the notification payload
+        notificationDetails.put("title", "Welcome!")
+        notificationDetails.put("body", "Thanks for joining our app.")
+        notificationData.put("message", JSONObject().put("token", fcmToken).put("notification", notificationDetails))
+
+        // Get access token and send notification
+        getAccessToken { accessToken ->
+            if (accessToken != null) {
+                // Send HTTP request using Volley
+                val requestQueue = Volley.newRequestQueue(this)
+                val jsonObjectRequest = object : JsonObjectRequest(
+                    Method.POST, url, notificationData,
+                    { response ->
+                        Toast.makeText(this, "Notification sent successfully: $response", Toast.LENGTH_LONG).show()
+                    },
+                    { error ->
+                        val errorMessage = when {
+                            error.networkResponse != null -> {
+                                "Error code: ${error.networkResponse.statusCode}, Response: ${String(error.networkResponse.data)}"
+                            }
+                            else -> {
+                                "Unknown error occurred: ${error.toString()}"
+                            }
+                        }
+                        Toast.makeText(this, "$errorMessage", Toast.LENGTH_LONG).show()
+                    }) {
+                    @Throws(AuthFailureError::class)
+                    override fun getHeaders(): Map<String, String> {
+                        val headers = HashMap<String, String>()
+                        headers["Authorization"] = "Bearer $accessToken"
+                        headers["Content-Type"] = "application/json"
+                        return headers
+                    }
+                }
+                requestQueue.add(jsonObjectRequest)
+            } else {
+                Toast.makeText(this, "Failed to retrieve access token", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+
+    private fun askNotificationPermission() {
+        // Check if the device is running Android 13 (API level 33) or higher
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            // Check if the permission is already granted
+            if (ContextCompat.checkSelfPermission(
+                    this, Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                // Permission is granted, you can post notifications
+                Log.d("Notification", "Permission already granted.")
+            } else if (shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
+                // Show UI to explain why the app needs the permission (Optional)
+                // For now, directly ask for the permission
+                Log.d("Notification", "Showing permission rationale.")
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            } else {
+                // Directly request the permission
+                Log.d("Notification", "Requesting permission directly.")
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+    }
+
+
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            // FCM SDK (and your app) can post notifications.
+            Log.d("Notification", "Permission granted: You can now post notifications.")
+        } else {
+
+            Log.d("Notification", "Permission denied: Your app will not show notifications.")
+        }
+    }
+
+    private fun getAccessToken(callback: (String?) -> Unit) {
+        // Launch a coroutine on the IO thread
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val googleCredentials = GoogleCredentials.fromStream(
+                    resources.openRawResource(R.raw.panik)
+                ).createScoped(listOf("https://www.googleapis.com/auth/firebase.messaging"))
+
+                googleCredentials.refreshIfExpired() // Refresh credentials if expired
+                val accessToken = googleCredentials.accessToken?.tokenValue // Get the access token
+
+                // Return the result on the Main thread
+                withContext(Dispatchers.Main) {
+                    callback(accessToken)
+                }
+            } catch (e: Exception) {
+                // Handle exception
+                withContext(Dispatchers.Main) {
+                    callback(null)
+                }
+            }
+        }
+    }
+
 
 }

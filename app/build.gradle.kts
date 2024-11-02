@@ -60,6 +60,10 @@ android {
     buildFeatures{
         viewBinding = true
     }
+    packagingOptions {
+        // Exclude the duplicate dependencies file
+        exclude("META-INF/DEPENDENCIES")
+    }
 }
 
 dependencies {
@@ -93,4 +97,6 @@ dependencies {
     implementation(libs.livedata)
     implementation(libs.viewModel)
     implementation(libs.biometrics)
+    implementation(libs.volley)
+    implementation(libs.googleauth2)
 }
