@@ -1,5 +1,6 @@
 package za.co.varsitycollege.st10215473.pank
 
+import android.app.AlertDialog
 import android.content.Context.MODE_PRIVATE
 import android.content.Intent
 import android.content.SharedPreferences
@@ -35,6 +36,7 @@ class ProfileFragment : Fragment() {
     private lateinit var sharedPreferences: SharedPreferences
 
     private val REQUEST_CODE_TRANSLATION = 1001  // Request code for SettingsPage
+    private lateinit var submitButton: Button
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,6 +44,8 @@ class ProfileFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_profile, container, false)
+        val reportForm = layoutInflater.inflate(R.layout.report_bugs_cardview, null)
+
 
         // Initialize Firebase Auth and Firestore
         firebaseAuth = FirebaseAuth.getInstance()
@@ -125,8 +129,8 @@ class ProfileFragment : Fragment() {
 
 
         // Other button functionalities can be added here...
-        openAboutDevsButton.setOnClickListener {
-            Toast.makeText(requireContext(), "Feature Coming Soon", Toast.LENGTH_SHORT).show()
+        openAboutDevsButton.setOnClickListener {val intent = Intent(requireContext(), AboutDevsActivity::class.java)
+            startActivity(intent)
         }
 
         openReportBugsButton.setOnClickListener {
@@ -137,7 +141,22 @@ class ProfileFragment : Fragment() {
         openProfileActivity.setOnClickListener { val intent = Intent(requireContext(), ProfileActivity::class.java)
             startActivity(intent)
         }
+
+        submitButton = view.findViewById(R.id.btnReportBugs)
+        submitButton.setOnClickListener {
+            showDialog(submitButton, reportForm)
+        }
         return view
+    }
+    fun showDialog(button: Button, reportForm: View) {
+        // Check if the reportForm already has a parent and remove it
+        val parent = reportForm.parent as? ViewGroup
+        parent?.removeView(reportForm)
+
+        val dialogBuilder = AlertDialog.Builder(requireContext())
+        dialogBuilder.setView(reportForm)
+        val dialog = dialogBuilder.create()
+        dialog.show()
     }
 
     // Override onActivityResult to check if language update was made
