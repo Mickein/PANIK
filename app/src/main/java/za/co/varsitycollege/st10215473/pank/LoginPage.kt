@@ -111,7 +111,6 @@ class LoginPage : AppCompatActivity() {
             finish()
         }
 
-
         //Firebase Authentication
         passwordEdit = findViewById(R.id.edtPasswordLogin)
         loginemail = findViewById(R.id.edtEmailLogin)
@@ -261,7 +260,7 @@ class LoginPage : AppCompatActivity() {
 
 
     private val launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
-        result->
+            result->
         if(result.resultCode == Activity.RESULT_OK){
             val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
             handleResults(task)
@@ -357,32 +356,54 @@ class LoginPage : AppCompatActivity() {
                             }
                             enrollLauncher.launch(enrollIntent)
                         } else {
-                            Toast.makeText(this@LoginPage, "Biometrics not set up", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                this@LoginPage,
+                                "Biometrics not set up",
+                                Toast.LENGTH_SHORT
+                            ).show()
                             finish()  // Redirect back if biometrics are not set
                         }
                     }
+
                     is BiometricPromptManager.BiometricResult.AuthenticationError -> {
-                        Toast.makeText(this@LoginPage, "Error: ${result.error}", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@LoginPage, "Error: ${result.error}", Toast.LENGTH_SHORT)
+                            .show()
                         finish()  // Redirect back to the previous page on authentication error
                     }
+
                     BiometricPromptManager.BiometricResult.AuthenticationFailed -> {
-                        Toast.makeText(this@LoginPage, "Authentication Failed", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@LoginPage, "Authentication Failed", Toast.LENGTH_SHORT)
+                            .show()
                         finish()  // Redirect back on failed authentication
                     }
+
                     BiometricPromptManager.BiometricResult.AuthenticationSuccess -> {
-                        Toast.makeText(this@LoginPage, "Authentication Successful", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            this@LoginPage,
+                            "Authentication Successful",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
+
                     BiometricPromptManager.BiometricResult.FeatureUnavailable -> {
-                        Toast.makeText(this@LoginPage, "Biometric feature unavailable", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            this@LoginPage,
+                            "Biometric feature unavailable",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
+
                     BiometricPromptManager.BiometricResult.HardwareUnavailable -> {
-                        Toast.makeText(this@LoginPage, "Biometric hardware unavailable", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            this@LoginPage,
+                            "Biometric hardware unavailable",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
 
                 }
             }
         }
     }
-
 
 }

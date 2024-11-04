@@ -120,6 +120,7 @@ class ProfileFragment : Fragment() {
             startActivityForResult(intent, REQUEST_CODE_TRANSLATION)  // Launch SettingsPage for result
         }
         openLogoutButton.setOnClickListener {
+            FirebaseAuth.getInstance().signOut()
             val intent = Intent(context, LoginPage::class.java)
             startActivity(intent)
 
