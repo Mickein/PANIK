@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.FirebaseFirestore
 import za.co.varsitycollege.st10215473.pank.adapter.ReportAdapter
 import za.co.varsitycollege.st10215473.pank.data.Reports
+import za.co.varsitycollege.st10215473.pank.decorator.SpacesItemDecoration
 
 
 class FeedFragment : Fragment() {
@@ -40,6 +41,10 @@ class FeedFragment : Fragment() {
 
         // Fetch all reports from Firestore
         fetchAllReports()
+
+        // Add spacing between items in RecyclerView
+        val spacingInPixels = resources.getDimensionPixelSize(R.dimen.spacing_between_items)
+        recyclerView.addItemDecoration(SpacesItemDecoration(spacingInPixels))
 
         return view
     }
