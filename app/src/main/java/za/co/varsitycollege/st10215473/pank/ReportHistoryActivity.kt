@@ -15,20 +15,11 @@ import za.co.varsitycollege.st10215473.pank.adapter.ReportAdapter
 import za.co.varsitycollege.st10215473.pank.data.Reports
 import za.co.varsitycollege.st10215473.pank.decorator.SpacesItemDecoration
 import android.util.Log
-import android.widget.Button
-import android.widget.TextView
 import android.widget.Toast
-
-import com.google.mlkit.common.model.DownloadConditions
-import com.google.mlkit.nl.translate.TranslateLanguage
-import com.google.mlkit.nl.translate.Translator
-import com.google.mlkit.nl.translate.TranslatorOptions
-
 import com.google.firebase.firestore.GeoPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -41,14 +32,7 @@ class ReportHistoryActivity : AppCompatActivity() {
     private lateinit var reportAdapter: ReportAdapter
 
     private val reportList = ArrayList<Reports>()  // List to store reports
-    private lateinit var titleHistory: TextView
-    private lateinit var Description: TextView
-    private lateinit var LocationHistory: TextView
-
-
-
     private lateinit var reportDao: ReportDao
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -82,22 +66,19 @@ class ReportHistoryActivity : AppCompatActivity() {
         rvReportHistory.addItemDecoration(SpacesItemDecoration(spacingInPixels))
     }
 
-    //OpenAI. (2024). Conversation on Report History. Available at https://www.openai.com
     private fun fetchUserReports(userId: String?) {
-        if(isOnline()){
+        if (isOnline()) {
             val reportApi = ApiClient.getClient().create(ReportApi::class.java)
             if (userId != null) {
                 reportApi.getReports(userId).enqueue(object : Callback<List<Reports>> {
                     override fun onResponse(call: Call<List<Reports>>, response: Response<List<Reports>>) {
                         if (response.isSuccessful && response.body() != null) {
                             reportList.clear()  // Clear previous reports
-                            reportList.addAll(response.body()!!)  // Add new reports
-                            Log.d("ReportHistoryActivity", "Reports fetched: ${reportList.size}")
+                            val fetchedReports = response.body()!!
 
-                            // Convert Reports to ReportEntity and insert them into Room
                             CoroutineScope(Dispatchers.IO).launch {
-                                val reportEntities = response.body()!!.map { report ->
-                                    ReportEntity(
+                                fetchedReports.forEach { report ->
+                                    val reportEntity = ReportEntity(
                                         title = report.title ?: "Untitled",  // Default title
                                         description = report.description ?: "No description",  // Default description
                                         location = report.location ?: GeoPoint(0.0, 0.0),  // Default to a GeoPoint (0, 0)
@@ -105,26 +86,43 @@ class ReportHistoryActivity : AppCompatActivity() {
                                         timestamp = report.timestamp ?: System.currentTimeMillis(),  // Default to current timestamp
                                         imageUrl = report.imageUrl ?: ""  // Default to empty string for image URL
                                     )
+
+                                    // Check if the report already exists in the database by title, userId, and timestamp
+                                    val existingReports = reportDao.getReportsByUserId(reportEntity.userId)
+                                    val isDuplicate = existingReports.any {
+                                        it.title == reportEntity.title &&
+                                                it.description == reportEntity.description &&
+                                                it.timestamp == reportEntity.timestamp
+                                    }
+
+                                    // Only insert if it's not a duplicate
+                                    if (!isDuplicate) {
+                                        reportDao.insertReport(reportEntity)
+                                    }
                                 }
-                                reportDao.insertAllReports(reportEntities)  // Insert all reports into Room
+
+                                // Update the UI on the main thread after database operations
+                                runOnUiThread {
+                                    reportList.addAll(fetchedReports)
+                                    reportAdapter.notifyDataSetChanged()
+                                }
                             }
                         } else {
                             Toast.makeText(this@ReportHistoryActivity, "Failed to retrieve reports: ${response.message()}", Toast.LENGTH_SHORT).show()
-                            Log.e("MainActivity", "Failed to retrieve reports: ${response.message()}")
+                            Log.e("ReportHistoryActivity", "Failed to retrieve reports: ${response.message()}")
                         }
-                        runOnUiThread { reportAdapter.notifyDataSetChanged() }
                     }
 
                     override fun onFailure(call: Call<List<Reports>>, t: Throwable) {
-                        Log.e("MainActivity", "Error: ${t.message}")
+                        Log.e("ReportHistoryActivity", "Error: ${t.message}")
                     }
                 })
             }
-        }else {
+        } else {
             CoroutineScope(Dispatchers.IO).launch {
-                val localReports = reportDao.getReportsByUserId(userId)  // Fetch reports from Room
+                val localReports = reportDao.getReportsByUserId(userId ?: "Unknown")  // Provide a fallback if userId is null
                 if (localReports.isNotEmpty()) {
-                    // If there are local reports, update the UI on the main thread
+                    // Update the UI on the main thread if there are local reports
                     reportList.clear()
                     reportList.addAll(localReports.map { reportEntity ->
                         Reports(
@@ -136,16 +134,14 @@ class ReportHistoryActivity : AppCompatActivity() {
                             imageUrl = reportEntity.imageUrl
                         )
                     })
-                    // Notify the adapter to update the RecyclerView
                     runOnUiThread { reportAdapter.notifyDataSetChanged() }
                 } else {
-                    // Optionally, show a message or handle the case of no local reports
                     Log.d("ReportHistoryActivity", "No local reports found.")
                 }
-
             }
         }
     }
+
 
     private fun isOnline(): Boolean {
         val connectivityManager = this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -153,4 +149,3 @@ class ReportHistoryActivity : AppCompatActivity() {
         return activeNetwork != null && activeNetwork.isConnected
     }
 }
-

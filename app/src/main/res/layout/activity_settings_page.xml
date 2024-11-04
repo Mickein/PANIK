@@ -7,36 +7,6 @@
     android:layout_height="match_parent"
     tools:context=".SettingsPage">
 
-    <Button
-        android:id="@+id/btnNotifications"
-        android:layout_width="326dp"
-        android:layout_height="98dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="108dp"
-        android:background="@drawable/semi_circle_login"
-        android:drawableLeft="@drawable/baseline_notifications_24"
-        android:paddingLeft="10dp"
-        android:text="NOTIFICATIONS"
-        android:textColor="#FFFFFF"
-        android:textSize="24sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/btnReportHistory"
-        android:layout_width="326dp"
-        android:layout_height="98dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="388dp"
-        android:background="@drawable/semi_circle_login"
-        android:drawableLeft="@drawable/baseline_format_align_left_24"
-        android:paddingLeft="10dp"
-        android:text="REPORT HISTORY"
-        android:textColor="#FFFFFF"
-        android:textSize="24sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <TextView
         android:id="@+id/txtBackToProfile"
         android:layout_width="wrap_content"
@@ -62,11 +32,26 @@
         android:layout_width="326dp"
         android:layout_height="98dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="248dp"
+        android:layout_marginTop="136dp"
         android:background="@drawable/semi_circle_login"
         android:drawableLeft="@drawable/baseline_record_voice_over_24"
         android:paddingLeft="10dp"
         android:text="LANGUAGE"
+        android:textColor="#FFFFFF"
+        android:textSize="24sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/btnReportHistory"
+        android:layout_width="326dp"
+        android:layout_height="98dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="276dp"
+        android:background="@drawable/semi_circle_login"
+        android:drawableLeft="@drawable/baseline_format_align_left_24"
+        android:paddingLeft="10dp"
+        android:text="REPORT HISTORY"
         android:textColor="#FFFFFF"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"

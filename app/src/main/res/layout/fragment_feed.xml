@@ -10,8 +10,9 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/FeedRecyclerView"
-        android:layout_width="357dp"
-        android:layout_height="639dp"
+        android:layout_width="358dp"
+        android:layout_height="585dp"
+        android:layout_marginTop="2dp"
         android:layout_marginBottom="82dp"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"

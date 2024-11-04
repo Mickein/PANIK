@@ -169,8 +169,6 @@ class ReportFragment : Fragment() {
         vandalismButton = view.findViewById(R.id.btnVandalism)
         noiseButton = view.findViewById(R.id.btnNoise)
         otherButton = view.findViewById(R.id.btnOther)
-        helpButton = view.findViewById(R.id.btnHelp)
-        panicButton = view.findViewById(R.id.btnPanic)
 
         wildfireButton.setOnClickListener {
             showDialog(wildfireButton, reportForm)
@@ -196,14 +194,6 @@ class ReportFragment : Fragment() {
         otherButton.setOnClickListener {
             showDialog(otherButton, reportForm)
         }
-
-        helpButton.setOnClickListener {
-            Toast.makeText(requireContext(), "Feature Coming Soon", Toast.LENGTH_SHORT).show()
-        }
-        panicButton.setOnClickListener {
-            Toast.makeText(requireContext(), "Feature Coming Soon", Toast.LENGTH_SHORT).show()
-        }
-
 
         locationCheckBox.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
@@ -317,7 +307,6 @@ class ReportFragment : Fragment() {
                         vandalismButton.text = translatedTexts[4]
                         noiseButton.text = translatedTexts[5]
                         otherButton.text = translatedTexts[6]
-                        helpButton.text = translatedTexts[7]
                         description.hint = translatedTexts[8]
                         location.hint = translatedTexts[9]
                         locationCheckBox.text = translatedTexts[10]
@@ -547,7 +536,6 @@ class ReportFragment : Fragment() {
                     inputStream?.copyTo(outputStream)
                 }
             }
-            Toast.makeText(context, "Image saved locally", Toast.LENGTH_SHORT).show()
         } catch (e: Exception) {
             Log.e("ImageSaveError", "Failed to save image: ${e.message}")
             Toast.makeText(context, "Failed to save image: ${e.message}", Toast.LENGTH_SHORT).show()
@@ -565,7 +553,7 @@ class ReportFragment : Fragment() {
         CoroutineScope(Dispatchers.IO).launch {
             reportDao.insertReport(reportEntity)
             withContext(Dispatchers.Main) {
-                Toast.makeText(context, "Report saved offline", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Report saved successfully", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -652,7 +640,6 @@ class ReportFragment : Fragment() {
             }
             // Notify user after processing all reports
             withContext(Dispatchers.Main) {
-                Toast.makeText(context, "Sync complete", Toast.LENGTH_SHORT).show()
             }
         }
     }

@@ -5,55 +5,13 @@
     android:id="@+id/frameLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ReportFragment" >
-
-    <Button
-        android:id="@+id/btnWildfire"
-        android:layout_width="137dp"
-        android:layout_height="74dp"
-        android:background="@drawable/custom_button_login"
-        android:text="Report a Wildfire"
-        android:textColor="#FFFFFF"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.071"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.22" />
-
-    <Button
-        android:id="@+id/btnSus"
-        android:layout_width="137dp"
-        android:layout_height="74dp"
-        android:background="@drawable/custom_reverse_button"
-        android:text="Report Suspicious Activity"
-        android:textColor="#FFFFFF"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.928"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.22" />
-
-    <Button
-        android:id="@+id/btnPet"
-        android:layout_width="137dp"
-        android:layout_height="74dp"
-        android:background="@drawable/custom_button_login"
-        android:text="Report Lost Pet"
-        android:textColor="#FFFFFF"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.071"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.367" />
+    tools:context=".ReportFragment">
 
     <Button
         android:id="@+id/btnCrime"
         android:layout_width="137dp"
         android:layout_height="74dp"
-        android:background="@drawable/custom_reverse_button"
+        android:background="@drawable/semi_circle_login"
         android:text="Report A Crime"
         android:textColor="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -61,27 +19,55 @@
         app:layout_constraintHorizontal_bias="0.928"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.366" />
+        app:layout_constraintVertical_bias="0.425" />
 
     <Button
-        android:id="@+id/btnMissingPerson"
+        android:id="@+id/btnWildfire"
         android:layout_width="137dp"
         android:layout_height="74dp"
-        android:background="@drawable/custom_button_login"
-        android:text="Report Missing Person"
+        android:background="@drawable/semi_circle_login"
+        android:text="Report a Wildfire"
         android:textColor="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.071"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.527" />
+        app:layout_constraintVertical_bias="0.279" />
+
+    <Button
+        android:id="@+id/btnSus"
+        android:layout_width="137dp"
+        android:layout_height="74dp"
+        android:background="@drawable/semi_circle_login"
+        android:text="Report Suspicious Activity"
+        android:textColor="#FFFFFF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.928"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.279" />
+
+    <Button
+        android:id="@+id/btnPet"
+        android:layout_width="137dp"
+        android:layout_height="74dp"
+        android:background="@drawable/semi_circle_login"
+        android:text="Report Lost Pet"
+        android:textColor="#FFFFFF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.071"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.425" />
 
     <Button
         android:id="@+id/btnVandalism"
         android:layout_width="137dp"
         android:layout_height="74dp"
-        android:background="@drawable/custom_reverse_button"
+        android:background="@drawable/semi_circle_login"
         android:text="Report Vandalism"
         android:textColor="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -89,13 +75,13 @@
         app:layout_constraintHorizontal_bias="0.928"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.527" />
+        app:layout_constraintVertical_bias="0.586" />
 
     <Button
         android:id="@+id/btnNoise"
         android:layout_width="137dp"
         android:layout_height="74dp"
-        android:background="@drawable/custom_button_login"
+        android:background="@drawable/semi_circle_login"
         android:text="Report Excessive Noise"
         android:textColor="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -103,13 +89,13 @@
         app:layout_constraintHorizontal_bias="0.071"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.687" />
+        app:layout_constraintVertical_bias="0.746" />
 
     <Button
         android:id="@+id/btnOther"
         android:layout_width="137dp"
         android:layout_height="74dp"
-        android:background="@drawable/custom_reverse_button"
+        android:background="@drawable/semi_circle_login"
         android:text="Other"
         android:textColor="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -117,35 +103,30 @@
         app:layout_constraintHorizontal_bias="0.928"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.687" />
+        app:layout_constraintVertical_bias="0.746" />
 
     <Button
-        android:id="@+id/btnHelp"
+        android:id="@+id/btnMissingPerson"
         android:layout_width="137dp"
         android:layout_height="74dp"
-        android:background="@drawable/custom_topdown_button"
-        android:text="Request Help"
+        android:background="@drawable/semi_circle_login"
+        android:text="Report Missing Person"
         android:textColor="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.506"
+        app:layout_constraintHorizontal_bias="0.071"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.848" />
+        app:layout_constraintVertical_bias="0.586" />
 
-    <Button
-        android:id="@+id/btnPanic"
-        android:layout_width="130dp"
-        android:layout_height="126dp"
-        android:background="@drawable/panic_button"
-        android:fontFamily="@font/bellefair"
-        android:text="PAN!K"
-        android:textSize="25sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.504"
+    <ImageView
+        android:id="@+id/imageView5"
+        android:layout_width="143dp"
+        android:layout_height="144dp"
+        android:layout_marginStart="109dp"
+        android:layout_marginTop="6dp"
+        android:src="@drawable/logo"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.023" />
+        app:layout_constraintTop_toTopOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

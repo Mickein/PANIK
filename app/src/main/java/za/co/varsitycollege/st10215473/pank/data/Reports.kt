@@ -8,7 +8,7 @@ val description: String? = null,
 val location: GeoPoint? = null,
 val userId: String? = null,
 val timestamp: Long? = null,
-val imageUrl: String? = null // Nullable since it might not always be present
+val imageUrl: String? = null
 ){
     constructor(): this("","",null,"",0,"")
 }

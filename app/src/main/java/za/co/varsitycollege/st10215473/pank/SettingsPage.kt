@@ -46,7 +46,6 @@ class SettingsPage : AppCompatActivity() {
         txtBackToProfile = findViewById(R.id.txtBackToProfile)
         btnReportHistory = findViewById(R.id.btnReportHistory)
         btnLanguage = findViewById(R.id.btnLanguage)
-        btnNotifications = findViewById(R.id.btnNotifications)
         btnBackToProfile = findViewById(R.id.btnBackToProfile)
 
 

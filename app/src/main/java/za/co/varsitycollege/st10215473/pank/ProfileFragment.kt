@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -134,7 +135,32 @@ class ProfileFragment : Fragment() {
         }
 
         openReportBugsButton.setOnClickListener {
-            Toast.makeText(requireContext(), "Feature Coming Soon", Toast.LENGTH_SHORT).show()
+            showDialog(openReportBugsButton, reportForm)
+
+
+
+            // Assuming reportForm contains a description input field
+            val description = reportForm.findViewById<EditText>(R.id.edtReportDescription)
+
+            val text = description.text.toString()
+
+            // Create a map or a data object to hold the report details
+            val reportData = hashMapOf(
+                "description" to text,
+                "timestamp" to System.currentTimeMillis()
+            )
+
+            // Reference Firestore and add the document to the ReportBugs collection
+            firebaseRef.collection("ReportBugs")
+                .add(reportData)
+                .addOnSuccessListener { documentReference ->
+                    // Handle successful upload
+                    Toast.makeText(context, "Report submitted successfully", Toast.LENGTH_SHORT).show()
+                }
+                .addOnFailureListener { e ->
+                    // Handle errors
+                    Toast.makeText(context, "Failed to submit report: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
         }
 
 
