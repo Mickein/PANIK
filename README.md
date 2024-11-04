@@ -1,7 +1,7 @@
 Welcome to PAN!K
 Youtube Video Link: https://youtu.be/SY3f5h0WLw0
 
-Github Link:https://github.com/Mickein/PANIK.git 
+Github Link:https://github.com/Mickein/PANIK.git
 
 Run PAN!K on your android device. You will be welcomed with the PAN!K Log-in screen. If you do not have an account you will need to register. 
 
@@ -35,35 +35,54 @@ By clicking the first icon in the nav-bar you will be redirected to the map page
 - category : the reports can be filtered by category which will allow you to view specific reports at a time. 
 
 Feed page :
-By clicking the second icon you will be redirected to the feed page which is Under Construction.
+By clicking the second icon you will be redirected to the feed page which will display all reports recorded on the platform.
 
 Reports page:
-By clicking the third icon you will be redirected to the reports page. This page consists of central Panik button (this feature is under construction), as well as other buttons that allow you to process various reports. Namely:
+By clicking the third icon you will be redirected to the reports page. On this page you are allowed to report reports based on various categories. Namely:
 - report a wild fire
 - report suspicious activity 
 - report a lost pet 
 - report a crime 
 - report a missing person 
 - report vandalism 
-- report accessive noise 
-- other (this allows you to file a report if non of the mentioned categories suit your report)
-- request help (under construction) 
+- report excessive noise 
+- other (this allows you to file a report if non of the mentioned categories suit your report) 
 
 Profile page :
-By clicking the fourth icon you will be redirected to the profile page. On this page you will see you name,email as well as account image (if applicable )auto populated. If you click on the edit icon in the top right corner you will be redirected to a page that will display your personal information.
+By clicking the fourth icon you will be redirected to the profile page. On this page you will see you name, email as well as account image (if applicable )auto populated. If you click on the edit icon in the top right corner you will be redirected to a page that will display your personal information.
 On the profile page you will see 4 buttons, those being :
 - Settings 
-- About Devs (under construction)
-- Report bugs (under construction)
-- Logout (under construction)
+- About Devs 
+- Report bugs 
+- Logout 
 
+Settings : 
 If you click on the settings button you will be redirected to the settings page where you will see 3 buttons , those being : 
-- Notifications (under construction)
 - Language (under construction)
 - Report History
+
+If you click the language button you will be redirected to the languages activity. Language options :
+- English 
+- Afrikaans 
+- Chinese
+- Korean
+- German 
 
 If you click on the report history button you will be redirected to the reports page which will display a neat list of all your reports. Filtered from newest to oldest. Each report will display the :
 - report title 
 - report description 
 - report location 
 - as well as a report picture (if chosen)
+
+About Devs : 
+If you click on about Devs you will be prompted with the developers of Panik's information. You will be required to enter the description of the issue or bug you have picked up while using the app.
+
+Report bugs :
+You can report bugs or issues you face on the app by clicking on the report bugs button.
+
+Logout : 
+If you want to logout of your account you can click the logout button . Once you have logged out you will be redirected to the login page.
+
+
+
+
