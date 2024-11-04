@@ -160,7 +160,6 @@ class SettingsPage : AppCompatActivity() {
             "Back to Profile Page",
             "Report History",
             "Language",
-            "Notifications"
         )
 
         val translatedTexts = mutableListOf<String>()
@@ -173,7 +172,6 @@ class SettingsPage : AppCompatActivity() {
                         txtBackToProfile.text = translatedTexts[0]
                         btnReportHistory.text = translatedTexts[1]
                         btnLanguage.text = translatedTexts[2]
-                        btnNotifications.text = translatedTexts[3]
                     }
                 }
                 .addOnFailureListener { exception ->
