@@ -159,7 +159,7 @@ class SettingsPage : AppCompatActivity() {
         val textsToTranslate = listOf(
             "Back to Profile Page",
             "Report History",
-            "Language",
+            "Language"
         )
 
         val translatedTexts = mutableListOf<String>()
